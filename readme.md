@@ -2,7 +2,7 @@
 
 ### Environment Setup
 
-There is none. This is a pure web project with no bundler, package management, etc. To start, use your favorite web server, or try `npx http-server`.
+There is none. Part of my goal here is to see how far I can push a pure web project with no bundler, package management, etc. To start, use your favorite web server, or try `npx http-server`.
 
 ### Release Management
 
