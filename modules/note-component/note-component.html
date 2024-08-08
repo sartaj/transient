@@ -58,6 +58,20 @@
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
   }
+  .days-left-container {
+    font-family: sans-serif;
+  }
+  .days-left-container > div:nth-child(1) {
+    font-size: calc(var(--input-text-size) * 0.7);
+  }
+  .days-left-container > div:nth-child(2) {
+    font-size: calc(var(--input-text-size) * 0.2);
+    text-transform: uppercase;
+  }
+  #clearButton {
+    display: flex;
+    align-items: center;
+  }
 </style>
 <div class="container">
   <div class="textarea-container">
@@ -78,7 +92,14 @@
     ></textarea>
   </div>
   <div class="toolbar">
-    <button id="clearButton" title="Save Note">🗑️</button>
-    <button id="saveButton" title="Clear Note">💾</button>
+    <button id="clearButton" title="Clear Note">
+      <div class="days-left-container">
+        <div id="daysLeft"></div>
+        <div>Days Left</div>
+      </div>
+      🗑️
+    </button>
+    <!-- Hiding save for now -->
+    <button id="saveButton" title="Save Note" style="display: none">💾</button>
   </div>
 </div>

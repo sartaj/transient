@@ -1,10 +1,12 @@
 import { createEncryptedLocalStorage } from "../encrypted-web-storage/encrypted-local-storage.js";
 
 const LOCALSTORAGE_KEY = "encryptedNote";
+const COOKIE_KEY = "encryptedNoteExpiration";
 
 const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
 const NOTE_INPUT = "#noteInput";
+const DAYS_LEFT = "#daysLeft";
 
 customElements.define(
   "note-component",
@@ -13,7 +15,9 @@ customElements.define(
       super();
       this.attachShadow({ mode: "open" });
       this.encryptedLocalStorage = createEncryptedLocalStorage({
-        key: LOCALSTORAGE_KEY,
+        localStorageKey: LOCALSTORAGE_KEY,
+        cookieKey: COOKIE_KEY,
+        expiration: 3,
       });
     }
 
@@ -124,6 +128,10 @@ customElements.define(
     async render() {
       const decryptedNote = await this.encryptedLocalStorage.getItem();
       this.shadowRoot.querySelector(NOTE_INPUT).value = decryptedNote;
+      const daysLeft = this.encryptedLocalStorage.getExpiration();
+      if (typeof daysLeft === "number") {
+        this.shadowRoot.querySelector(DAYS_LEFT).innerHTML = `${daysLeft}`;
+      }
     }
   }
 );

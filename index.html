@@ -21,7 +21,8 @@
     />
     <link rel="manifest" href="./app.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Coming Soon: Temporary Encrypted Notes" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
     <!-- Reset CSS -->
     <style>
       * {
@@ -33,6 +34,23 @@
     </style>
   </head>
   <body>
+    <!-- Set title, description, keyword from app manifest -->
+    <script type="module">
+      fetch(new URL("./app.webmanifest", import.meta.url))
+        .then((res) => res.json())
+        .then((manifest) => {
+          document.title = manifest.name;
+          document.getElementsByTagName("meta")["keywords"].content =
+            manifest.keywords;
+          document.getElementsByTagName("meta")["description"].content =
+            manifest.description;
+        })
+        .catch((e) => {
+          alert("Failed to get app info");
+          console.error(new Error(e));
+        });
+    </script>
+
     <script type="module">
       import "./entry.js";
     </script>
