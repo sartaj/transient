@@ -1,10 +1,10 @@
-const CACHE_NAME = "offline-cache-v7";
+const CACHE_NAME = "offline-cache-v8";
 const OFFLINE_FILES = [
   "/",
   "/index.html",
   "/entry.js",
   "/app.webmanifest",
-  "/modules/cookie-factory/cookie-factory.js",
+  "/modules/encrypted-web-storage/cookie-factory.js",
   "/modules/encrypted-web-storage/encryption.js",
   "/modules/encrypted-web-storage/encrypted-local-storage.js",
   "/modules/note-component/note-component.js",

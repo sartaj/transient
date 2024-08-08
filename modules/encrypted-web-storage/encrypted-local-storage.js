@@ -4,7 +4,7 @@ import {
   encryptData,
   decryptData,
 } from "./encryption.js";
-import { cookieFactory } from "../cookie-factory/cookie-factory.js";
+import { cookieFactory } from "./cookie-factory.js";
 /**
  * @typedef {Object} EncryptedLocalStorageOpts
  * @property {string} localStorageKey - localStorage key
@@ -40,7 +40,7 @@ export const createEncryptedLocalStorage = (opts) => {
     }
   };
 
-  const getItem = async () => {
+  const getItem = () => {
     try {
       return localStorage.getItem(opts.localStorageKey);
       // const encryptedNote = localStorage.getItem(opts.localStorageKey);
