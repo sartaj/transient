@@ -9,17 +9,14 @@ const OFFLINE_FILES = [
   "/modules/encrypted-web-storage/encrypted-local-storage.js",
   "/modules/note-component/note-component.js",
   "/modules/note-component/note-component.html",
-];
+].map((file) => {
+  // Add base path.
+  return `${self.location.pathname.replace("/service-worker.js", "")}${file}`;
+});
 
 // Save to cache
 self.addEventListener("install", (e) => {
-  console.log(
-    "[Service Worker] [Install] Origin",
-    self.location.origin,
-    self.location.pathname,
-    self.location.href
-  );
-
+  console.log("[Service Worker] [Install] Origin", { location: self.location });
   e.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
