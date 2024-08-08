@@ -14,6 +14,7 @@ One goal of this project is to be an easy template for other projects.
 
 - **modules/** - Where main code lies.
 - **entry.js** - File that defines/starts the code.
+- **style.css** - Global theming variables.
 - **service-worker.js top of file** - Given the issues with importing on service-workers, currently have to manually update files in there.
 - **app.webmanifest** - [Manifest definition](https://developer.mozilla.org/en-US/docs/Web/Manifest)
 - **icons** - App Icons

@@ -3,6 +3,7 @@ const OFFLINE_FILES = [
   "/",
   "/index.html",
   "/entry.js",
+  "/style.css",
   "/app.webmanifest",
   "/modules/encrypted-web-storage/cookie-factory.js",
   "/modules/encrypted-web-storage/encryption.js",

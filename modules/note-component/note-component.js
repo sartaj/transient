@@ -40,6 +40,7 @@ customElements.define(
         window.addEventListener("keydown", this.handleKeyDown.bind(this), true);
 
         // Render
+        this.shadowRoot.querySelector(NOTE_INPUT).focus();
         this.render();
       } catch (e) {
         alert("Failed loading note component.");
@@ -56,8 +57,7 @@ customElements.define(
         .querySelector(CLEAR_BUTTON)
         .removeEventListener("click", this.clearNote.bind(this));
 
-      // if we needed keyboard shortcuts like ctrl+s
-      // window.removeEventListener("keydown", this.handleKeyDown, true);
+      window.removeEventListener("keydown", this.handleKeyDown, true);
     }
 
     // For saving while typing
