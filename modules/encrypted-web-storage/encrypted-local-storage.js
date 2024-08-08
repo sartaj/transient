@@ -15,12 +15,6 @@ import { cookieFactory } from "../cookie-factory/cookie-factory.js";
 export const createEncryptedLocalStorage = (opts) => {
   const cookie = cookieFactory(opts.cookieKey);
 
-  // On init, check if expired
-  if (!cookie.get()) {
-    localStorage.clear(opts.localStorageKey);
-    alert("Note expired.");
-  }
-
   const getExpiration = () => {
     const val = cookie.get();
     if (val) {
@@ -75,6 +69,16 @@ export const createEncryptedLocalStorage = (opts) => {
       console.error(new Error(e));
     }
   };
+
+  // On init, check if expired
+  const init = () => {
+    if (!cookie.get() && getItem()) {
+      localStorage.clear(opts.localStorageKey);
+      alert("Note expired.");
+    }
+  };
+
+  init();
 
   return {
     getItem,
