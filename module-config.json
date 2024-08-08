@@ -1,12 +1,13 @@
 {
   "service-worker": {
-    "cache_name": "offline-cache-v1",
+    "cache_name": "offline-cache-v2",
     "offline_files": [
       "/",
       "/index.html",
       "/modules/note-component/note-component.js",
       "/modules/note-component/note-component.html",
-      "/modules/encrypted-web-storage/encryption.js"
+      "/modules/encrypted-web-storage/encryption.js",
+      "/modules/encrypted-web-storage/encrypted-local-storage.js"
     ]
   }
 }

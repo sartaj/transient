@@ -1,22 +1,84 @@
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
-    }
-    input {
-        padding: 10px;
-        margin-bottom: 10px;
-        width: 300px;
-        font-size: 1em;
-    }
-    button {
-        padding: 10px;
-        font-size: 1em;
-    }
+  :host {
+    --primary-bg: #ded6cb;
+    --input-text-size: 2em;
+    --button-text-size: 1.5em;
+    --caret-color: blue;
+    --px: 5px;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--primary-bg);
+    overflow: hidden;
+  }
+  .textarea-container {
+    flex: 1;
+    width: 100%;
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+  }
+  textarea {
+    width: 100%;
+    height: 100%;
+    padding: calc(var(--px) * 4);
+    font-size: var(--input-text-size);
+    caret-color: var(--caret-color);
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+  }
+  button {
+    padding: calc(var(--px) * 2);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: calc(var(--px));
+    margin: var(--px);
+    border: none;
+    font-size: var(--button-text-size);
+  }
+  .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: var(--px);
+  }
+  .toolbar button {
+    filter: grayscale(1) contrast(0.5);
+    /* opacity: 0.5; */
+  }
+  .toolbar button:hover,
+  .toolbar button:active {
+    opacity: 0.8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
+  }
 </style>
 <div class="container">
-    <input type="text" placeholder="Write your note here..." id="noteInput">
-    <button id="saveButton">Save Note</button>
+  <div class="textarea-container">
+    <textarea
+      autofocus
+      placeholder="
+      ___     ||
+     /\__\    ||
+    /:/  /    ||
+   /:/__/     ||
+  /::\  \     ||
+ /:/\:\  \    ||
+ \/__\:\  \   ||
+      \:\__\  ||
+       \/__/  ||
+              || "
+      id="noteInput"
+    ></textarea>
+  </div>
+  <div class="toolbar">
+    <button id="clearButton" title="Save Note">🗑️</button>
+    <button id="saveButton" title="Clear Note">💾</button>
+  </div>
 </div>

@@ -44,6 +44,7 @@ export function decryptData(encryptedData, privateKey) {
 
 export async function getPublicKey() {
   try {
+    console.log("1");
     const publicKeyCredentialCreationOptions = {
       publicKey: {
         challenge: new Uint8Array(32),
@@ -67,12 +68,14 @@ export async function getPublicKey() {
       },
     };
 
+    console.log("2");
     const credential = await navigator.credentials.create(
       publicKeyCredentialCreationOptions
     );
     const publicKey = credential.response.getPublicKey();
+    console.log("3");
 
-    return window.crypto.subtle.importKey(
+    const importedKey = await window.crypto.subtle.importKey(
       "spki",
       publicKey,
       {
@@ -82,8 +85,10 @@ export async function getPublicKey() {
       true,
       ["encrypt"]
     );
+    console.log("4");
+    return importedKey;
   } catch (e) {
-    alert("An error occurred 3.");
+    alert("An error occurred while trying to create and get the public key.");
     console.error(e);
   }
 }
