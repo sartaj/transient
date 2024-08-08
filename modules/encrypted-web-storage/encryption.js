@@ -49,12 +49,12 @@ export async function getPublicKey() {
       publicKey: {
         challenge: new Uint8Array(32),
         rp: {
-          name: "Test Note Taking App",
+          name: "Transient App",
         },
         user: {
           id: new Uint8Array(16),
-          name: "sartaj",
-          displayName: "Sartaj",
+          name: "name",
+          displayName: "Name",
         },
         pubKeyCredParams: [
           { alg: -7, type: "public-key" }, // ES256
