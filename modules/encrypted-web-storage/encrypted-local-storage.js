@@ -72,7 +72,8 @@ export const createEncryptedLocalStorage = (opts) => {
 
   // On init, check if expired
   const init = () => {
-    if (!cookie.get() && getItem()) {
+    const note = getItem() || "";
+    if (!cookie.get() && note.length.trim() > 0) {
       localStorage.clear(opts.localStorageKey);
       alert("Note expired.");
     }
