@@ -70,9 +70,12 @@ self.addEventListener("fetch", (e) => {
         return r;
       }
       const response = await fetch(e.request);
-      const cache = await caches.open(CACHE_NAME);
-      console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
-      cache.put(e.request, response.clone());
+      // Only put offline files in there
+      if(OFFLINE_FILES.includes(e.request)) {
+        const cache = await caches.open(CACHE_NAME);
+        console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+        cache.put(e.request, response.clone());  
+      }
       return response;
     })()
   );

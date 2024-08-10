@@ -1,9 +1,4 @@
-import {
-  getPrivateKey,
-  getPublicKey,
-  encryptData,
-  decryptData,
-} from "./encryption.js";
+import "./encryption.js";
 import { cookieFactory } from "./cookie-factory.js";
 /**
  * @typedef {Object} EncryptedLocalStorageOpts
@@ -40,7 +35,7 @@ export const createEncryptedLocalStorage = (opts) => {
     }
   };
 
-  const getItem = () => {
+  const getItem = async () => {
     try {
       return localStorage.getItem(opts.localStorageKey);
       // const encryptedNote = localStorage.getItem(opts.localStorageKey);
@@ -59,9 +54,9 @@ export const createEncryptedLocalStorage = (opts) => {
   /** @param value {string} */
   const setItem = async (value) => {
     try {
-      //   const publicKey = await getPublicKey();
-      //   console.log("publicKey", publicKey);
-      //   const encryptedNote = await encryptData(value, publicKey);
+      // const publicKey = await getPublicKey();
+      // console.log("publicKey", publicKey);
+      // const encryptedNote = await encryptData(value, publicKey);
       localStorage.setItem(opts.localStorageKey, value);
       setExpiration(opts.expiration);
     } catch (e) {
@@ -71,8 +66,8 @@ export const createEncryptedLocalStorage = (opts) => {
   };
 
   // On init, check if expired
-  const init = () => {
-    const note = getItem() || "";
+  const init = async () => {
+    const note = (await getItem()) || "";
     if (!cookie.get() && note.trim().length > 0) {
       localStorage.clear(opts.localStorageKey);
       alert("Note expired.");

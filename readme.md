@@ -1,8 +1,23 @@
+# Transient - Secure Notes
+
+## Features
+
+- Write notes that will automatically disappear after a few days. Great for temporary todo lists.
+- App fully works offline, & notes are saved locally to your device. 
+- (Coming Soon) Notes will be encrypted via passkey (i.e. biometrics).
+
+## The Tech
+
+This is a pure web project with no bundler, package management, etc. Part of the goal of this project is to see how much can be made with just the browser, meaning this project should have a very long shelf life.
+
+- Notes are saved in Local Storage
+- PWA Service Worker Used to work offline
+
 ## Contributing
 
 ### Environment Setup
 
-There is none. This is a pure web project with no bundler, package management, etc. To start, use your favorite web server, or try `npx http-server`.
+There is none. To start, use your favorite web server, or try `npx http-server`.
 
 ### Release Management
 

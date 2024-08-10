@@ -1,0 +1,98 @@
+<html>
+  <script type="module">
+    async function encryptData() {
+      navigator.credentials
+        .get({
+          publicKey: {
+            timeout: 60000,
+            challenge: new Uint8Array([
+              // must be a cryptographically random number sent from a server. Don't use dummy
+              // values in real authentication situations.
+              1,
+              2, 3, 4,
+            ]).buffer,
+            extensions: {
+              prf: {
+                eval: { first: new TextEncoder().encode("Foo encryption key") },
+              },
+            },
+          },
+        })
+        .then((c) => {
+          const toEncrypt = btoa(
+            String.fromCharCode.apply(
+              null,
+              new Uint8Array(c.getClientExtensionResults().prf.results.first)
+            )
+          );
+          localStorage.setItem("foo", toEncrypt);
+          console.log("ENCRYPTED");
+          console.log(
+            btoa(
+              String.fromCharCode.apply(
+                null,
+                new Uint8Array(c.getClientExtensionResults().prf.results.first)
+              )
+            )
+          );
+        });
+    }
+    encryptData();
+  </script>
+
+  <script type="module">
+    async function decryptData() {
+      // Step 1: Retrieve the encrypted data from localStorage
+      const encryptedData = localStorage.getItem("foo");
+      const encryptedArrayBuffer = Uint8Array.from(atob(encryptedData), (c) =>
+        c.charCodeAt(0)
+      ).buffer;
+
+      // Step 2: Derive the PRF key using the same PRF input
+      const credentialAssertion = await navigator.credentials.get({
+        publicKey: {
+          timeout: 60000,
+          challenge: new Uint8Array([1, 2, 3, 4]).buffer, // Use the same challenge as during encryption
+          extensions: {
+            prf: {
+              eval: { first: new TextEncoder().encode("Foo encryption key") },
+            },
+          },
+        },
+      });
+
+      // Extract the PRF result (decryption key)
+      const prfResult =
+        credentialAssertion.getClientExtensionResults().prf.results.first;
+
+      // Step 3: Decrypt the data using the derived key
+      const key = await crypto.subtle.importKey(
+        "raw",
+        prfResult,
+        { name: "AES-GCM" },
+        false,
+        ["decrypt"]
+      );
+
+      // Assuming the encryption used AES-GCM
+      const iv = encryptedArrayBuffer.slice(0, 12); // Use the first 12 bytes as IV
+      const ciphertext = encryptedArrayBuffer.slice(12); // The rest is the ciphertext
+
+      try {
+        const decryptedBuffer = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          ciphertext
+        );
+
+        const decryptedText = new TextDecoder().decode(decryptedBuffer);
+        console.log("DECRYPTED TEXT:", decryptedText);
+      } catch (error) {
+        console.error("Decryption failed:", error);
+      }
+    }
+
+    // Call the decrypt function
+    // decryptData();
+  </script>
+</html>
