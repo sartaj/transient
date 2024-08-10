@@ -25,10 +25,10 @@ export const cookieFactory = (name) => {
   // Function to get a cookie value and expiration details
   const get = () => {
     let cookie = {};
-    document.cookie.split(';').forEach(function(el) {
-      let split = el.split('=');
+    document.cookie.split(";").forEach(function (el) {
+      let split = el.split("=");
       cookie[split[0].trim()] = split.slice(1).join("=");
-    })
+    });
     return cookie[name];
   };
 
