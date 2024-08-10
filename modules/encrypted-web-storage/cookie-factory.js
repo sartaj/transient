@@ -24,14 +24,12 @@ export const cookieFactory = (name) => {
 
   // Function to get a cookie value and expiration details
   const get = () => {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1); // Trim leading spaces
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); // Return the cookie value
-    }
-    return null; // Return null if the cookie is not found
+    let cookie = {};
+    document.cookie.split(';').forEach(function(el) {
+      let split = el.split('=');
+      cookie[split[0].trim()] = split.slice(1).join("=");
+    })
+    return cookie[name];
   };
 
   // Return all functions
