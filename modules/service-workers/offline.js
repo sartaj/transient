@@ -1,18 +1,28 @@
-if (typeof CACHE_NAME === "undefined") {
-  throw new Error("Must define CACHE_NAME in the root service worker.");
+if (typeof VERSION === "undefined") {
+  throw new Error("Must define VERSION in the root service worker.");
 }
 
-console.log("CURRENT CACHE", CACHE_NAME);
+if (typeof OFFLINE_FILES === "undefined") {
+  throw new Error("Must define OFFLINE_FILES in the root service worker.");
+}
+
+console.log("CURRENT VERSION", VERSION);
+
+async function sendClientCacheVersion(clientId) {
+  return null;
+  // const client = await clients.get(clientId);
+  // client.postMessage({ type: "VERSION", VERSION });
+}
 
 // Save to cache
 self.addEventListener("install", (e) => {
   console.log("[Service Worker] [Install] Origin", { location: self.location });
   e.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME);
+      const cache = await caches.open(VERSION);
       console.log(
         "[Service Worker] [Install] Adding to Cache:",
-        CACHE_NAME,
+        VERSION,
         OFFLINE_FILES
       );
       await cache.addAll(OFFLINE_FILES);
@@ -26,20 +36,19 @@ self.addEventListener("activate", (e) => {
     (async () => {
       console.log(
         "[Service Worker] [Activate] Searching for Old Cache. Current Cache:",
-        CACHE_NAME
+        VERSION
       );
+
+      await sendClientCacheVersion(e.clientId);
 
       await caches.keys().then((keyList) => {
         return Promise.all(
           keyList.map((key) => {
-            if (key === CACHE_NAME) {
+            if (key === VERSION) {
               return;
             }
             // Delete cache we are no longer wanting.
-            console.log(
-              "[Service Worker] [Activate] Deleting Cache",
-              CACHE_NAME
-            );
+            console.log("[Service Worker] [Activate] Deleting Cache", VERSION);
             return caches.delete(key);
           })
         );
@@ -63,7 +72,7 @@ self.addEventListener("fetch", (e) => {
         return r;
       }
       const response = await fetch(e.request);
-      const cache = await caches.open(CACHE_NAME);
+      const cache = await caches.open(VERSION);
       console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
       cache.put(e.request, response.clone());
       return response;
