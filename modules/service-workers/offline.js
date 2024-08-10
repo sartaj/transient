@@ -9,9 +9,8 @@ if (typeof OFFLINE_FILES === "undefined") {
 console.log("CURRENT VERSION", VERSION);
 
 async function sendClientCacheVersion(clientId) {
-  return null;
-  // const client = await clients.get(clientId);
-  // client.postMessage({ type: "VERSION", VERSION });
+  const client = await clients.get(clientId);
+  client.postMessage({ type: "VERSION", VERSION });
 }
 
 // Save to cache

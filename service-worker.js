@@ -1,7 +1,7 @@
 const __dirname = self.location.pathname.replace("/service-worker.js", "");
 const relativePath = (p) => [__dirname, p].join("");
 
-const VERSION = "offline-cache-v11";
+const VERSION = "202408101458";
 const OFFLINE_FILES = [
   "/",
   "/index.html",

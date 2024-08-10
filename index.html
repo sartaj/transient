@@ -72,6 +72,12 @@
               }
             );
         });
+
+        navigator.serviceWorker.addEventListener("message", (message) => {
+          console.log("RECEIVED MESSAGE");
+          alert(message);
+          console.log(message);
+        });
       }
     </script>
 
