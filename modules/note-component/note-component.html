@@ -18,13 +18,16 @@
   }
   .textarea-container {
     flex: 1;
+    flex-direction: column;
     width: 100%;
+    min-height: 400px;
+    height: 100%;
     outline: none;
     border: none;
     background: transparent;
     display: flex;
   }
-  input {
+  .textarea {
     font-family: monospace;
     width: 100%;
     height: 100%;
@@ -35,10 +38,11 @@
     border: none;
     background: transparent;
     display: flex;
+    resize: none;
   }
 
   @media only screen and (min-width: 768px) {
-    input {
+    .textarea {
       font-size: calc(var(--input-text-size) * 1.5);
       max-width: 768px;
     }
@@ -94,16 +98,11 @@
     font-size: 0.9em;
     padding: calc(var(--px) * 2);
   }
-  #background {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
 </style>
 <div class="container" id="notesContainer">
   <div class="note-item">
     <div class="textarea-container">
-      <input autofocus id="noteInput" />
+      <textarea autofocus class="textarea" id="noteInput"></textarea>
     </div>
     <div class="toolbar">
       <button id="clearButton" title="Clear Note">

@@ -1,3 +1,1 @@
-import "./modules/note-component/note-component.js";
-
-document.body.appendChild(document.createElement("note-component"));
+import "./modules/note-component/init.js";
