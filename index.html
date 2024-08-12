@@ -52,35 +52,14 @@
         });
     </script>
 
+    <!-- Register Service Worker -->
     <script type="module">
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          const url = new URL("service-worker.js", import.meta.url);
-          navigator.serviceWorker
-            .register(url, {
-              updateViaCache: "none",
-            })
-            .then(
-              (registration) => {
-                console.log(
-                  "ServiceWorker registration successful with scope: ",
-                  registration.scope
-                );
-              },
-              (error) => {
-                console.log("ServiceWorker registration failed: ", error);
-              }
-            );
-        });
-
-        navigator.serviceWorker.addEventListener("message", (message) => {
-          console.log("RECEIVED MESSAGE");
-          alert(message);
-          console.log(message);
-        });
-      }
+      import { register } from "./modules/service-workers/register.client.js";
+      const url = new URL("service-worker.js", import.meta.url);
+      register(url);
     </script>
 
+    <!-- Start App -->
     <script type="module">
       import "./entry.js";
     </script>

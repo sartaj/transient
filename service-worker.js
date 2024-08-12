@@ -1,7 +1,8 @@
 const __dirname = self.location.pathname.replace("/service-worker.js", "");
 const relativePath = (p) => [__dirname, p].join("");
 
-const VERSION = "202408101458";
+const VERSION = "202408121";
+
 const OFFLINE_FILES = [
   "/",
   "/index.html",
@@ -13,6 +14,9 @@ const OFFLINE_FILES = [
   "/modules/encrypted-web-storage/encrypted-local-storage.js",
   "/modules/note-component/note-component.js",
   "/modules/note-component/note-component.html",
+  "/modules/service-workers/register.client.js",
+  "/modules/service-workers/version.client.js",
 ].map(relativePath);
 
-importScripts(relativePath("/modules/service-workers/offline.js"));
+importScripts(relativePath("/modules/service-workers/offline.sw.js"));
+importScripts(relativePath("/modules/service-workers/version.sw.js"));

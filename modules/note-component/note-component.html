@@ -55,7 +55,8 @@
   .toolbar {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin: var(--px);
   }
   .toolbar button {
@@ -82,6 +83,11 @@
     display: flex;
     align-items: center;
   }
+  #version {
+    font-family: monospace;
+    opacity: 0.5;
+    font-size: 0.9em;
+  }
 </style>
 <div class="container">
   <div class="textarea-container">
@@ -102,6 +108,7 @@
     ></textarea>
   </div>
   <div class="toolbar">
+    <div id="version"></div>
     <button id="clearButton" title="Clear Note">
       <div class="days-left-container">
         <div id="daysLeft"></div>
