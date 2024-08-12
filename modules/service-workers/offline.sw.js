@@ -2,26 +2,6 @@ if (typeof VERSION === "undefined") {
   throw new Error("Must define VERSION in the root service worker.");
 }
 
-if (typeof OFFLINE_FILES === "undefined") {
-  throw new Error("Must define OFFLINE_FILES in the root service worker.");
-}
-
-// Save to cache
-self.addEventListener("install", (event) => {
-  console.debug("[Service Worker] [Install] Installing");
-  event.waitUntil(
-    (async () => {
-      const cache = await caches.open(VERSION);
-      await cache.addAll(OFFLINE_FILES);
-      console.debug(
-        "[Service Worker] [Install] Added to Cache:",
-        VERSION,
-        OFFLINE_FILES
-      );
-    })()
-  );
-});
-
 // Delete old content
 self.addEventListener("activate", (event) => {
   event.waitUntil(
