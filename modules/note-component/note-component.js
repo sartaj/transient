@@ -1,4 +1,5 @@
 import { createEncryptedLocalStorage } from "../encrypted-web-storage/encrypted-local-storage.js";
+import { onVersion } from "../service-workers/version.client.js";
 
 const LOCALSTORAGE_KEY = "encryptedNote";
 const COOKIE_KEY = "encryptedNoteExpiration";
@@ -7,6 +8,8 @@ const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
 const NOTE_INPUT = "#noteInput";
 const DAYS_LEFT = "#daysLeft";
+
+const VERSION = "#version";
 
 customElements.define(
   "note-component",
@@ -40,7 +43,9 @@ customElements.define(
         window.addEventListener("keydown", this.handleKeyDown.bind(this), true);
 
         // Render
-        this.shadowRoot.querySelector(NOTE_INPUT).focus();
+        onVersion((version) => {
+          this.shadowRoot.querySelector(VERSION).innerHTML = `v.${version}`;
+        });
         this.render();
       } catch (e) {
         alert("Failed loading note component.");

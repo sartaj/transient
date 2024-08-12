@@ -2,6 +2,7 @@
   "name": "Transient Note",
   "short_name": "Transient",
   "description": "Temporary Notes Designed To Disappear",
+  "start_url": "./",
   "icons": [
     {
       "src": "./icons/android-chrome-192x192.png",
