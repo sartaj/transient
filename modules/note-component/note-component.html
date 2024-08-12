@@ -14,6 +14,7 @@
     height: 100vh;
     background: var(--primary-bg);
     overflow: hidden;
+    justify-content: space-between;
   }
   .textarea-container {
     flex: 1;
@@ -23,11 +24,11 @@
     background: transparent;
     display: flex;
   }
-  textarea {
+  input {
     font-family: monospace;
     width: 100%;
     height: 100%;
-    padding: calc(var(--px) * 4);
+    padding: var(--px);
     font-size: var(--input-text-size);
     caret-color: var(--caret-color);
     outline: none;
@@ -37,10 +38,9 @@
   }
 
   @media only screen and (min-width: 768px) {
-    textarea {
+    input {
       font-size: calc(var(--input-text-size) * 1.5);
       max-width: 768px;
-      margin: 150px auto;
     }
   }
 
@@ -79,44 +79,47 @@
     font-size: calc(var(--input-text-size) * 0.2);
     text-transform: uppercase;
   }
+  .note-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   #clearButton {
     display: flex;
     align-items: center;
   }
-  #version {
+  .footer {
     font-family: monospace;
     opacity: 0.5;
     font-size: 0.9em;
+    padding: calc(var(--px) * 2);
+  }
+  #background {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 </style>
-<div class="container">
-  <div class="textarea-container">
-    <textarea
-      autofocus
-      placeholder="
-      ___     ||
-     /\__\    ||
-    /:/  /    ||
-   /:/__/     ||
-  /::\  \     ||
- /:/\:\  \    ||
- \/__\:\  \   ||
-      \:\__\  ||
-       \/__/  ||
-              || "
-      id="noteInput"
-    ></textarea>
+<div class="container" id="notesContainer">
+  <div class="note-item">
+    <div class="textarea-container">
+      <input autofocus id="noteInput" />
+    </div>
+    <div class="toolbar">
+      <button id="clearButton" title="Clear Note">
+        <div class="days-left-container">
+          <div id="daysLeft"></div>
+          <div>Days Left</div>
+        </div>
+        🗑️
+      </button>
+      <!-- Hiding save for now -->
+      <button id="saveButton" title="Save Note" style="display: none">
+        💾
+      </button>
+    </div>
   </div>
-  <div class="toolbar">
+  <div class="footer">
     <div id="version"></div>
-    <button id="clearButton" title="Clear Note">
-      <div class="days-left-container">
-        <div id="daysLeft"></div>
-        <div>Days Left</div>
-      </div>
-      🗑️
-    </button>
-    <!-- Hiding save for now -->
-    <button id="saveButton" title="Save Note" style="display: none">💾</button>
   </div>
 </div>

@@ -43,9 +43,6 @@ customElements.define(
         window.addEventListener("keydown", this.handleKeyDown.bind(this), true);
 
         // Render
-        onVersion((version) => {
-          this.shadowRoot.querySelector(VERSION).innerHTML = `v.${version}`;
-        });
         this.render();
       } catch (e) {
         alert("Failed loading note component.");
@@ -131,6 +128,10 @@ customElements.define(
     }
 
     async render() {
+      onVersion((version) => {
+        this.shadowRoot.querySelector(VERSION).innerHTML = `v.${version}`;
+      });
+
       const decryptedNote = await this.encryptedLocalStorage.getItem();
       this.shadowRoot.querySelector(NOTE_INPUT).value = decryptedNote;
       const daysLeft = this.encryptedLocalStorage.getExpiration();
