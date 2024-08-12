@@ -56,6 +56,7 @@
     <script type="module">
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
+          const url = new URL("service-worker.js", import.meta.url);
           navigator.serviceWorker
             .register(url, {
               // Keep both imports and main sw in network.
