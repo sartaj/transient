@@ -1,10 +1,10 @@
-import {
-  getPrivateKey,
-  getPublicKey,
-  encryptData,
-  decryptData,
-} from "./encryption.js";
-import { cookieFactory } from "./cookie-factory.js";
+// import {
+//   getPrivateKey,
+//   getPublicKey,
+//   encryptData,
+//   decryptData,
+// } from "./encryption.js";
+
 /**
  * @typedef {Object} EncryptedLocalStorageOpts
  * @property {string} localStorageKey - localStorage key
@@ -13,22 +13,7 @@ import { cookieFactory } from "./cookie-factory.js";
  * @param {EncryptedLocalStorageOpts} opts
  */
 export const createEncryptedLocalStorage = (opts) => {
-  const cookie = cookieFactory(opts.cookieKey);
-
-  const getExpiration = () => {
-    const val = cookie.get();
-    if (val) {
-      return dateToDaysFromNow(val);
-    } else {
-      return null;
-    }
-  };
-
   // 1 week default
-  const setExpiration = (days = 7) => {
-    const dateFromNow = daysFromNowToDate(days);
-    cookie.set(dateFromNow, dateFromNow);
-  };
 
   const clear = async () => {
     try {
@@ -42,7 +27,7 @@ export const createEncryptedLocalStorage = (opts) => {
 
   const getItem = () => {
     try {
-      return localStorage.getItem(opts.localStorageKey);
+      return JSON.parse(localStorage.getItem(opts.localStorageKey));
       // const encryptedNote = localStorage.getItem(opts.localStorageKey);
       // if (encryptedNote) {
       //   const privateKey = await getPrivateKey();
@@ -62,49 +47,16 @@ export const createEncryptedLocalStorage = (opts) => {
       //   const publicKey = await getPublicKey();
       //   console.log("publicKey", publicKey);
       //   const encryptedNote = await encryptData(value, publicKey);
-      localStorage.setItem(opts.localStorageKey, value);
-      setExpiration(opts.expiration);
+      localStorage.setItem(opts.localStorageKey, JSON.stringify(value));
     } catch (e) {
       alert("Failed saving.");
       console.error(new Error(e));
     }
   };
 
-  // On init, check if expired
-  const init = () => {
-    const note = getItem() || "";
-    if (!cookie.get() && note.trim().length > 0) {
-      localStorage.clear(opts.localStorageKey);
-      alert("Note expired.");
-    }
-  };
-
-  init();
-
   return {
     getItem,
     setItem,
     clear,
-    getExpiration,
   };
-};
-
-/**
- * @param {number} days
- */
-const daysFromNowToDate = (days) => {
-  const now = new Date();
-  const futureDate = new Date(now);
-  futureDate.setDate(now.getDate() + days); // Add days
-  return futureDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-};
-
-/**
- * @param {string} futureDate - Format: YYYY-MM-DD
- */
-const dateToDaysFromNow = (futureDate) => {
-  const now = new Date();
-  const future = new Date(futureDate);
-  const timeDiff = future - now; // Difference in milliseconds
-  return Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0); // Convert to days
 };

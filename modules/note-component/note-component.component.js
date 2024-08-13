@@ -1,5 +1,6 @@
 import { onVersion } from "../service-workers/version.client.js";
 import { store, ACTIONS } from "./note-component.data.js";
+import { timestampToDaysFromNow } from "./date.utils.js";
 
 const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
@@ -129,9 +130,12 @@ export class NoteComponent extends HTMLElement {
     });
 
     store.listen((state) => {
-      const thisItem = state[0];
-      this.shadowRoot.querySelector(NOTE_INPUT).value = thisItem.value;
-      this.shadowRoot.querySelector(DAYS_LEFT).innerHTML = thisItem.expires;
+      const thisItem = state.notes[0];
+      if (typeof thisItem === "object") {
+        this.shadowRoot.querySelector(NOTE_INPUT).value = thisItem.value;
+        this.shadowRoot.querySelector(DAYS_LEFT).innerHTML =
+          timestampToDaysFromNow(thisItem.expires);
+      }
     });
   }
 }
