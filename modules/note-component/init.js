@@ -12,7 +12,7 @@ const localStorageDriver = async () => {
 
   //   Init state with localstorage
   const note = await storage.getItem();
-  if (typeof note === "object") {
+  if (typeof note === "object" && note !== null) {
     // Add to state
     store.dispatch({
       type: ACTIONS.UPDATE,

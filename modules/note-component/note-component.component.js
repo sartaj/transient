@@ -131,7 +131,7 @@ export class NoteComponent extends HTMLElement {
 
     store.listen((state) => {
       const thisItem = state.notes[0];
-      if (typeof thisItem === "object") {
+      if (typeof thisItem === "object" && thisItem !== null) {
         this.shadowRoot.querySelector(NOTE_INPUT).value = thisItem.value;
         this.shadowRoot.querySelector(DAYS_LEFT).innerHTML =
           timestampToDaysFromNow(thisItem.expires);
