@@ -35,7 +35,7 @@ const localStorageDriver = async () => {
 
 const expirationListener = () => {
   store.listen((state) => {
-    const note = state[0];
+    const note = state.notes[0];
     if (note && isPastCurrentTimestamp(note.expires)) {
       alert("Note expired.");
       store.dispatch({
