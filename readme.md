@@ -8,7 +8,9 @@ Useful for things like grocery lists, daily todos, quick notes, etc.
 - **📲 Installable:** Can install as an app on mobile and desktop devices.
 - **😶‍🌫️ Fully private:** Works only offline and saves data on device.
 
-## Tech - Bundle-less, Package management-less, Web Native Architecture
+## Tech - Bundle-less, Package management-less, Browser-native Architecture built on Web Standards
+
+Part of my goal here is to see how far I can push a pure web project to have great features with no server, bundler, package management, etc.
 
 - **Will Always Just Work:** Project should be able to run for years to come without needing to deal with upgrades cycles or [dependecy hell](https://en.wikipedia.org/wiki/Dependency_hell).
 - **No Config Setup:** Setup is nearly plug and play. Just download the repo, and open `index.html` in a web browser.
@@ -19,9 +21,7 @@ Useful for things like grocery lists, daily todos, quick notes, etc.
 
 ### Environment Setup
 
-There is none. Part of my goal here is to see how far I can push a pure web project with no bundler, package management, etc.
-
-To start, use your favorite web server, or try:
+There is none. To start, use your favorite web server, or try:
 
 ```
 npx http-server
