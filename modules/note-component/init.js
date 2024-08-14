@@ -1,26 +1,23 @@
 import { createWebStorage } from "../web-storage/web-storage.js";
-import { ACTIONS, store } from "./data/note.state.js";
-import { isNoteObj, isPastCurrentTimestamp } from "./data/note.utils.js";
+import { ACTIONS, isNoteState, store } from "./data/note.state.js";
+import { isPastCurrentTimestamp } from "./data/note.utils.js";
 import { NoteComponent } from "./note-component.component.js";
 
-const LOCALSTORAGE_KEY = "note0";
+const LOCALSTORAGE_KEY = "note-state";
 
 const localStorageDriver = async () => {
   const storage = createWebStorage({
     localStorageKey: LOCALSTORAGE_KEY,
-    validate: isNoteObj,
+    validate: isNoteState,
   });
 
   //   Init state with localstorage
-  const note = await storage.getItem();
-  if (note) {
+  const state = await storage.getItem();
+  if (state) {
     // Add to state
     store.dispatch({
-      type: ACTIONS.UPDATE,
-      value: {
-        value: note.value,
-        expires: note.expires,
-      },
+      type: ACTIONS.HYDRATE,
+      payload: state,
     });
   } else {
     store.dispatch({
@@ -30,7 +27,7 @@ const localStorageDriver = async () => {
 
   // Listen for changes
   store.listen(async (state) => {
-    await storage.setItem(state.notes[0]);
+    await storage.setItem(state);
   });
 };
 

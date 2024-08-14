@@ -1,6 +1,6 @@
 import { onVersion } from "../service-workers/version.client.js";
-import { ACTIONS, store } from "./data/note.state.js";
-import { isNoteObj, timestampToDaysFromNow } from "./data/note.utils.js";
+import { ACTIONS, isNoteObj, store } from "./data/note.state.js";
+import { timestampToDaysFromNow } from "./data/note.utils.js";
 
 const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
