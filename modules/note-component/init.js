@@ -31,14 +31,23 @@ const localStorageDriver = async () => {
   });
 };
 
+// Listen for changes and check if any notes have expired
 const expirationListener = () => {
   store.listen((state) => {
-    const note = state.notes[0];
-    if (note && isPastCurrentTimestamp(note.expires)) {
+    let notesCleared = false;
+    // Check if any notes have expired
+    state.notes.forEach((note, i) => {
+      // If note is expired, clear it
+      if (isPastCurrentTimestamp(note.expires)) {
+        store.dispatch({
+          type: ACTIONS.CLEAR,
+          payload: i,
+        });
+      }
+    });
+    // Notify user if any notes were cleared
+    if (notesCleared) {
       alert("Note expired.");
-      store.dispatch({
-        type: ACTIONS.CLEAR,
-      });
     }
   });
 };

@@ -30,6 +30,8 @@ export type Actions =
     }
   | {
       type: typeof ACTIONS.CLEAR;
+      /** Line number to clear */
+      payload: number;
     }
   | {
       type: typeof ACTIONS.CREATE;

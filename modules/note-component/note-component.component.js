@@ -2,11 +2,13 @@ import { onVersion } from "../service-workers/version.client.js";
 import { ACTIONS, isNoteObj, store } from "./data/note.state.js";
 import { timestampToDaysFromNow } from "./data/note.utils.js";
 
+// Inputs
 const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
 const NOTE_INPUT = "#noteInput";
-const DAYS_LEFT = "#daysLeft";
 
+// Template elements
+const DAYS_LEFT = "#daysLeft";
 const VERSION = "#version";
 
 export class NoteComponent extends HTMLElement {
@@ -115,7 +117,7 @@ export class NoteComponent extends HTMLElement {
     try {
       if (window.confirm("Clear Note?")) {
         verifyInput($(this.shadowRoot, NOTE_INPUT)).value = "";
-        store.dispatch({ type: ACTIONS.CLEAR });
+        store.dispatch({ type: ACTIONS.CLEAR, payload: 0 });
       }
     } catch (e) {
       handleError(e);
@@ -134,11 +136,14 @@ export class NoteComponent extends HTMLElement {
   async render() {
     const dom = this.shadowRoot;
 
+    // Listen for the version from the service worker, and render
     onVersion((version) => {
       $(dom, VERSION).innerHTML = `v.${version}`;
     });
 
+    // Listen for changes to the note state and render accordingly
     store.listen((state) => {
+      // todo: make an array of items
       const thisItem = state.notes[0];
       if (isNoteObj(thisItem)) {
         verifyInput($(dom, NOTE_INPUT)).value = thisItem.value;

@@ -41,8 +41,18 @@ const reducer = (state, action) => {
         ...state,
         notes: [{ ...currentNote, ...action.value }],
       };
-    case ACTIONS.CREATE:
     case ACTIONS.CLEAR:
+      // If there is only one note, then we should create a new blank note
+      if (state.notes.length === 1) {
+        action.type = ACTIONS.CREATE;
+      } else {
+        // Otherwise, remove the note at the index
+        return {
+          ...state,
+          notes: state.notes.splice(state.payload, 1),
+        };
+      }
+    case ACTIONS.CREATE:
       return {
         ...state,
         notes: [createExpiringNote()],
