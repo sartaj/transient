@@ -19,6 +19,9 @@ export class NotesContainerElement extends HTMLElement {
 
   async connectedCallback() {
     try {
+      if (!this.shadowRoot) {
+        throw new Error("No shadow root for container.");
+      }
       // Mount
       const url = new URL("notes-container.html", import.meta.url);
       const html = await fetch(url).then((response) => response.text());
@@ -70,7 +73,7 @@ export class NotesContainerElement extends HTMLElement {
       );
 
       // Loop through the notes and render the note item components if they don't exist yet.
-      state.notes.forEach((note, index) => {
+      state.notes.forEach((note) => {
         const indexOfItem = noteKeys.indexOf(note.expires);
         // Check if item already exists
         if (indexOfItem !== -1) {
@@ -79,14 +82,14 @@ export class NotesContainerElement extends HTMLElement {
         }
         // Add element to the container if it already doesn't exist.
         const noteComponent = document.createElement(NoteItem);
-        noteComponent.setAttribute(
-          NoteItemAttributes.NoteIndex,
-          index.toString()
-        ); // Pass index to the child component
+
+        // Assuming the expiration is unique
         noteComponent.setAttribute(
           NoteItemAttributes.NoteExpires,
           note.expires
-        ); // Assuming the expiration is unique
+        );
+
+        // Set default value
         noteComponent.setAttribute(
           NoteItemAttributes.NoteDefaultValue,
           note.value

@@ -14,7 +14,6 @@ const NOTE_INPUT = "#noteInput";
 const DAYS_LEFT = "#daysLeft";
 
 export const NoteItemAttributes = {
-  NoteIndex: "note-index",
   NoteExpires: "note-expires",
   NoteDefaultValue: "note-default-value",
 };
@@ -27,19 +26,14 @@ export class NoteItemElement extends HTMLElement {
 
   async connectedCallback() {
     try {
+      if (!this.shadowRoot) {
+        throw new Error("No shadow root for item.");
+      }
+
       // Mount
       const url = new URL("note-item.html", import.meta.url);
       const html = await fetch(url).then((response) => response.text());
       this.shadowRoot.innerHTML = html;
-
-      // Get note index from attribute
-      this.noteIndex =
-        parseInt(this.getAttribute(NoteItemAttributes.NoteIndex), 10) || 0;
-
-      this.noteExpires = this.getAttribute(NoteItemAttributes.NoteExpires) || 0;
-
-      this.noteDefaultValue =
-        this.getAttribute(NoteItemAttributes.NoteDefaultValue) || "";
 
       // Hooks
       $(this.shadowRoot, CLEAR_BUTTON).addEventListener(
@@ -74,7 +68,7 @@ export class NoteItemElement extends HTMLElement {
 
     $(this.shadowRoot, NOTE_INPUT).removeEventListener(
       "input",
-      this.handeInput.bind(this)
+      this.handleInput.bind(this)
     );
 
     $(this.shadowRoot, NOTE_INPUT).removeEventListener(
@@ -96,6 +90,9 @@ export class NoteItemElement extends HTMLElement {
     this.saveNote();
   }
 
+  /**
+   * @param {KeyboardEvent} event
+   */
   handleKeyDown(event) {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevent the default enter key behavior
@@ -106,10 +103,11 @@ export class NoteItemElement extends HTMLElement {
 
   /**
    * Insert special markdown characters into the mix.
+   * @param {KeyboardEvent} event
    */
   insertNewLine(event) {
-    const textarea = this.shadowRoot.querySelector(NOTE_INPUT);
-    const cursorPosition = textarea.selectionStart;
+    const textarea = verifyInput($(this.shadowRoot, NOTE_INPUT));
+    const cursorPosition = textarea.selectionStart || textarea.value.length + 1;
     const textBeforeCursor = textarea.value.slice(0, cursorPosition);
     const lastLineBreakIndex = textBeforeCursor.lastIndexOf("\n");
     const previousLine = textBeforeCursor.slice(lastLineBreakIndex + 1);
@@ -122,9 +120,13 @@ export class NoteItemElement extends HTMLElement {
 
     // Check if the previous line matches any of the patterns
     for (const pattern of listItemPatterns) {
-      if (pattern.test(previousLine.trim())) {
-        prefix = previousLine.trim().match(pattern)[0] + " ";
-        break;
+      const prevLineTrimmed = previousLine.trim();
+      if (pattern.test(prevLineTrimmed)) {
+        const matchedPattern = prevLineTrimmed.match(pattern);
+        if (matchedPattern !== null) {
+          prefix = matchedPattern[0] + " ";
+          break;
+        }
       }
     }
 
@@ -148,6 +150,14 @@ export class NoteItemElement extends HTMLElement {
     } catch (e) {
       handleError(e);
     }
+  }
+
+  get noteExpires() {
+    return this.getAttribute(NoteItemAttributes.NoteExpires) || "0";
+  }
+
+  get noteDefaultValue() {
+    return this.getAttribute(NoteItemAttributes.NoteDefaultValue) || "";
   }
 
   async saveNote() {
