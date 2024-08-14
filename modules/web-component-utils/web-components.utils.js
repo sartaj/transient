@@ -45,3 +45,18 @@ export const $ = (dom, selector) => {
     throw new Error("Element not found.");
   }
 };
+
+/**
+ * Safe query selector for shadow DOM that passes ts strict checks.
+ *
+ * @param {ShadowRoot | null} dom - The DOM element to search within.
+ * @param {string} selector - The CSS selector to match against.
+ * @returns {Element[]} - The first element that matches the selector.
+ */
+export const $all = (dom, selector) => {
+  if (!dom) {
+    throw new Error("Component failed to attach shadow root.");
+  }
+  const elements = dom.querySelectorAll(selector);
+  return Array.from(elements);
+};

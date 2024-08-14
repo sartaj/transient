@@ -1,6 +1,7 @@
 import { onVersion } from "../../service-workers/version.client.js";
 import {
   $,
+  $all,
   handleError,
 } from "../../web-component-utils/web-components.utils.js";
 import { ACTIONS, store } from "../data/note.state.js";
@@ -63,7 +64,7 @@ export class NotesContainerElement extends HTMLElement {
     store.listen((state) => {
       const notesContainer = $(dom, "#notesContainer");
 
-      const noteItems = dom.querySelectorAll(NoteItem);
+      const noteItems = $all(dom, NoteItem);
       const noteKeys = Array.from(noteItems).map((item) =>
         item.getAttribute(keyAttr)
       );
@@ -95,7 +96,7 @@ export class NotesContainerElement extends HTMLElement {
 
       // Any items left in the array are expired and should be removed
       noteKeys.forEach((key) => {
-        const item = dom.querySelector(`[${keyAttr}="${key}"]`);
+        const item = $(dom, `[${keyAttr}="${key}"]`);
         item.remove();
       });
     });
