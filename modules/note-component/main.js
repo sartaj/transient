@@ -58,7 +58,7 @@ const expirationListener = () => {
       if (isPastCurrentTimestamp(note.expires)) {
         store.dispatch({
           type: ACTIONS.CLEAR,
-          payload: i,
+          payload: note.expires,
         });
       }
     });

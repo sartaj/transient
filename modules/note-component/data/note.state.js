@@ -56,10 +56,10 @@ const reducer = (state, action) => {
           notes: [createExpiringNote()],
         };
       } else {
-        // Otherwise, remove the note at the index
+        // Otherwise, remove the note that has the expiration as a key.
         return {
           ...state,
-          notes: state.notes.splice(state.payload, 1),
+          notes: state.notes.filter((note) => note.expires !== action.payload),
         };
       }
     case ACTIONS.ADD:

@@ -3,8 +3,11 @@ import {
   Reducer,
 } from "../../create-reducer-store/create-reducer-store";
 
+type Expires = string;
+
 export type Note = {
-  expires: string;
+  /** Expires doubles as unique key */
+  expires: Expires;
   value: string;
 };
 
@@ -27,14 +30,13 @@ export type Actions =
   | {
       type: typeof ACTIONS.UPDATE;
       payload: {
-        key: string;
+        key: Expires;
         value: string;
       };
     }
   | {
       type: typeof ACTIONS.CLEAR;
-      /** Line number to clear */
-      payload: number;
+      payload: Expires;
     }
   | {
       type: typeof ACTIONS.ADD;

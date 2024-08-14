@@ -143,7 +143,7 @@ export class NoteItemElement extends HTMLElement {
     try {
       if (window.confirm("Clear Note?")) {
         verifyInput($(this.shadowRoot, NOTE_INPUT)).value = "";
-        store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteIndex });
+        store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteExpires });
       }
     } catch (e) {
       handleError(e);
