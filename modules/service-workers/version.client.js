@@ -1,3 +1,6 @@
+/**
+ * @param {(s: string) => void} cb
+ */
 export const onVersion = (cb) => {
   const channel = new BroadcastChannel("version");
   channel.addEventListener("message", (event) => {
@@ -5,5 +8,7 @@ export const onVersion = (cb) => {
     cb(event.data);
   });
   const version = localStorage.getItem("version");
-  cb(version);
+  if (version !== null) {
+    cb(version);
+  }
 };

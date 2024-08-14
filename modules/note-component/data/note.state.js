@@ -1,5 +1,5 @@
-import { createReducerStore } from "../create-reducer-store/create-reducer-store.js";
-import { daysFromNowToTimestamp } from "./date.utils.js";
+import { createReducerStore } from "../../create-reducer-store/create-reducer-store.js";
+import { daysFromNowToTimestamp } from "./note.utils.js";
 
 const DEFAULT_EXPIRATION = 3;
 

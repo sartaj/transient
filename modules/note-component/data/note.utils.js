@@ -1,3 +1,6 @@
+export const isNoteObj = (obj) =>
+  typeof obj === "object" && obj !== null && obj.value && obj.expires;
+
 /**
  * @param {number} days
  */
@@ -14,7 +17,7 @@ export const daysFromNowToTimestamp = (days) => {
 export const timestampToDaysFromNow = (isoString) => {
   const now = new Date();
   const future = new Date(isoString);
-  const timeDiff = future - now; // Difference in milliseconds
+  const timeDiff = future.valueOf() - now.valueOf(); // Difference in milliseconds
   return Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0); // Convert to days
 };
 

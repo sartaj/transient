@@ -1,18 +1,19 @@
-import { ACTIONS, store } from "./note-component.data.js";
+import { createWebStorage } from "../web-storage/web-storage.js";
+import { ACTIONS, store } from "./data/note.state.js";
+import { isNoteObj, isPastCurrentTimestamp } from "./data/note.utils.js";
 import { NoteComponent } from "./note-component.component.js";
-import { createEncryptedLocalStorage } from "../encrypted-web-storage/encrypted-local-storage.js";
-import { isPastCurrentTimestamp } from "./date.utils.js";
 
 const LOCALSTORAGE_KEY = "note0";
 
 const localStorageDriver = async () => {
-  const storage = createEncryptedLocalStorage({
+  const storage = createWebStorage({
     localStorageKey: LOCALSTORAGE_KEY,
+    validate: isNoteObj,
   });
 
   //   Init state with localstorage
   const note = await storage.getItem();
-  if (typeof note === "object" && note !== null) {
+  if (note) {
     // Add to state
     store.dispatch({
       type: ACTIONS.UPDATE,
@@ -40,7 +41,6 @@ const expirationListener = () => {
       alert("Note expired.");
       store.dispatch({
         type: ACTIONS.CLEAR,
-        value,
       });
     }
   });
