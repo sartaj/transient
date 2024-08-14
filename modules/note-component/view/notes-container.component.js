@@ -1,11 +1,15 @@
-import { store } from "../data/note.state.js";
-import { handleError, $ } from "./web-components.utils.js";
 import { onVersion } from "../../service-workers/version.client.js";
+import {
+  $,
+  handleError,
+} from "../../web-component-utils/web-components.utils.js";
+import { store } from "../data/note.state.js";
 
-import "./note-item.component.js";
+import { NoteItem, NoteItemAttributes } from "./note-item.component.js";
+
 const VERSION = "#version";
 
-export class NotesContainerComponent extends HTMLElement {
+export class NotesContainerElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -33,23 +37,51 @@ export class NotesContainerComponent extends HTMLElement {
       $(dom, VERSION).innerHTML = `v.${version}`;
     });
 
+    const keyAttr = NoteItemAttributes.NoteExpires;
+
     // Listen for changes to the note state and render the child components
     store.listen((state) => {
       const notesContainer = $(dom, "#notesContainer");
+
+      const noteItems = dom.querySelectorAll(NoteItem);
+      const noteKeys = Array.from(noteItems).map((item) =>
+        item.getAttribute(keyAttr)
+      );
+
       // Loop through the notes and render the note item components if they don't exist yet.
       state.notes.forEach((note, index) => {
+        const indexOfItem = noteKeys.indexOf(note.expires);
         // Check if item already exists
-        // todo: make it based on a key and not an index, or there may be bugs while rerendering.
-        if (dom.querySelector(`note-item[note-index="${index}"]`)) {
+        if (indexOfItem !== -1) {
+          noteKeys.splice(indexOfItem, 1); // Remove the key from the array
           return;
         }
         // Add element to the container if it already doesn't exist.
-        const noteComponent = document.createElement("note-item");
-        noteComponent.setAttribute("note-index", index); // Pass index to the child component
+        const noteComponent = document.createElement(NoteItem);
+        noteComponent.setAttribute(
+          NoteItemAttributes.NoteIndex,
+          index.toString()
+        ); // Pass index to the child component
+        noteComponent.setAttribute(
+          NoteItemAttributes.NoteExpires,
+          note.expires
+        ); // Assuming the expiration is unique
+        noteComponent.setAttribute(
+          NoteItemAttributes.NoteDefaultValue,
+          note.value
+        );
         notesContainer.appendChild(noteComponent);
+      });
+
+      // Any items left in the array are expired and should be removed
+      noteKeys.forEach((key) => {
+        const item = dom.querySelector(`[${keyAttr}="${key}"]`);
+        item.remove();
       });
     });
   }
 }
 
-customElements.define("notes-container", NotesContainerComponent);
+export const NotesContainer = "notes-container";
+
+customElements.define(NotesContainer, NotesContainerElement);

@@ -15,7 +15,7 @@ type State = {
 export declare enum ACTIONS {
   "UPDATE" = "UPDATE",
   "CLEAR" = "CLEAR",
-  "CREATE" = "CREATE",
+  "ADD" = "ADD",
   "HYDRATE" = "HYDRATE",
 }
 
@@ -26,7 +26,10 @@ export type Actions =
     }
   | {
       type: typeof ACTIONS.UPDATE;
-      value: Partial<Note>;
+      payload: {
+        key: string;
+        value: string;
+      };
     }
   | {
       type: typeof ACTIONS.CLEAR;
@@ -34,7 +37,7 @@ export type Actions =
       payload: number;
     }
   | {
-      type: typeof ACTIONS.CREATE;
+      type: typeof ACTIONS.ADD;
     };
 
 export type NoteReducer = Reducer<State, Actions>;

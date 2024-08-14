@@ -1,1 +1,3 @@
-import "./modules/note-component/init.js";
+import { main } from "./modules/note-component/main.js";
+
+main();

@@ -1,6 +1,10 @@
 import { ACTIONS, isNoteObj, store } from "../data/note.state.js";
 import { timestampToDaysFromNow } from "../data/note.utils.js";
-import { $, handleError, verifyInput } from "./web-components.utils.js";
+import {
+  $,
+  handleError,
+  verifyInput,
+} from "../../web-component-utils/web-components.utils.js";
 
 // Inputs
 const SAVE_BUTTON = "#saveButton";
@@ -10,7 +14,13 @@ const NOTE_INPUT = "#noteInput";
 // Template elements
 const DAYS_LEFT = "#daysLeft";
 
-export class NoteItem extends HTMLElement {
+export const NoteItemAttributes = {
+  NoteIndex: "note-index",
+  NoteExpires: "note-expires",
+  NoteDefaultValue: "note-default-value",
+};
+
+export class NoteItemElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -24,10 +34,15 @@ export class NoteItem extends HTMLElement {
       this.shadowRoot.innerHTML = html;
 
       // Get note index from attribute
-      this.noteIndex = parseInt(this.getAttribute("note-index"), 10);
+      this.noteIndex =
+        parseInt(this.getAttribute(NoteItemAttributes.NoteIndex), 10) || 0;
+
+      this.noteExpires = this.getAttribute(NoteItemAttributes.NoteExpires) || 0;
+
+      this.noteDefaultValue =
+        this.getAttribute(NoteItemAttributes.NoteDefaultValue) || "";
 
       // Hooks
-
       $(this.shadowRoot, CLEAR_BUTTON).addEventListener(
         "click",
         this.clearNote.bind(this)
@@ -74,11 +89,13 @@ export class NoteItem extends HTMLElement {
 
   async saveNote() {
     try {
-      const note = verifyInput($(this.shadowRoot, NOTE_INPUT)).value;
+      const noteValue = verifyInput($(this.shadowRoot, NOTE_INPUT)).value;
       store.dispatch({
         type: ACTIONS.UPDATE,
-        value: { value: note },
-        index: this.noteIndex,
+        payload: {
+          value: noteValue,
+          key: this.noteExpires,
+        },
       });
     } catch (e) {
       handleError(e);
@@ -88,16 +105,14 @@ export class NoteItem extends HTMLElement {
   async render() {
     const dom = this.shadowRoot;
 
-    store.listen((state) => {
-      const thisItem = state.notes[this.noteIndex];
-      if (isNoteObj(thisItem)) {
-        verifyInput($(dom, NOTE_INPUT)).value = thisItem.value;
-        $(dom, DAYS_LEFT).innerHTML = String(
-          timestampToDaysFromNow(thisItem.expires)
-        );
-      }
-    });
+    verifyInput($(dom, NOTE_INPUT)).value = this.noteDefaultValue;
+
+    $(dom, DAYS_LEFT).innerHTML = String(
+      timestampToDaysFromNow(this.noteExpires)
+    );
   }
 }
 
-customElements.define("note-item", NoteItem);
+export const NoteItem = "note-item";
+
+customElements.define(NoteItem, NoteItemElement);
