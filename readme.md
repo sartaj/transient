@@ -1,4 +1,4 @@
-## Transient - A Note Taking App With A Self Destruct Mechanism
+## Transient - The Disappearing Notes App
 
 Useful for things like grocery lists, daily todos, quick notes, etc.
 
