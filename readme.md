@@ -4,7 +4,7 @@ Useful for things like grocery lists, daily todos, quick notes, etc.
 
 ### Features
 
-- **💣 Self Destruct Note** Note will automatically delete in a few days.
+- **💣 Self Destruct Notes** Notes will automatically delete in a few days.
 - **📲 Installable:** Can install as an app on mobile and desktop devices.
 - **😶‍🌫️ Fully private:** Works only offline and saves data on device.
 
