@@ -36,26 +36,36 @@ const reducer = (state, action) => {
     case ACTIONS.HYDRATE:
       return action.payload;
     case ACTIONS.UPDATE:
-      const currentNote = state.notes[0] || createExpiringNote();
       return {
         ...state,
-        notes: [{ ...currentNote, ...action.value }],
+        notes: state.notes.map((note) => {
+          if (note.expires === action.payload.key) {
+            return {
+              expires: note.expires,
+              value: action.payload.value,
+            };
+          }
+          return note;
+        }),
       };
     case ACTIONS.CLEAR:
       // If there is only one note, then we should create a new blank note
       if (state.notes.length === 1) {
-        action.type = ACTIONS.CREATE;
-      } else {
-        // Otherwise, remove the note at the index
         return {
           ...state,
-          notes: state.notes.splice(state.payload, 1),
+          notes: [createExpiringNote()],
+        };
+      } else {
+        // Otherwise, remove the note that has the expiration as a key.
+        return {
+          ...state,
+          notes: state.notes.filter((note) => note.expires !== action.payload),
         };
       }
-    case ACTIONS.CREATE:
+    case ACTIONS.ADD:
       return {
         ...state,
-        notes: [createExpiringNote()],
+        notes: [...state.notes, createExpiringNote()],
       };
     default:
       return state;
@@ -68,7 +78,7 @@ const reducer = (state, action) => {
 export const ACTIONS = {
   UPDATE: "UPDATE",
   CLEAR: "CLEAR",
-  CREATE: "CREATE",
+  ADD: "ADD",
   HYDRATE: "HYDRATE",
 };
 
@@ -76,7 +86,7 @@ export const ACTIONS = {
  * @type {import('./note.state').IsNote}
  */
 export const isNoteObj = (obj) =>
-  typeof obj === "object" && obj !== null && obj.value && obj.expires;
+  typeof obj === "object" && obj !== null && "value" in obj && "expires" in obj;
 
 /**
  * @type {import('./note.state').IsNoteState}

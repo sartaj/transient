@@ -3,8 +3,11 @@ import {
   Reducer,
 } from "../../create-reducer-store/create-reducer-store";
 
+type Expires = string;
+
 export type Note = {
-  expires: string;
+  /** Expires doubles as unique key */
+  expires: Expires;
   value: string;
 };
 
@@ -15,7 +18,7 @@ type State = {
 export declare enum ACTIONS {
   "UPDATE" = "UPDATE",
   "CLEAR" = "CLEAR",
-  "CREATE" = "CREATE",
+  "ADD" = "ADD",
   "HYDRATE" = "HYDRATE",
 }
 
@@ -26,15 +29,17 @@ export type Actions =
     }
   | {
       type: typeof ACTIONS.UPDATE;
-      value: Partial<Note>;
+      payload: {
+        key: Expires;
+        value: string;
+      };
     }
   | {
       type: typeof ACTIONS.CLEAR;
-      /** Line number to clear */
-      payload: number;
+      payload: Expires;
     }
   | {
-      type: typeof ACTIONS.CREATE;
+      type: typeof ACTIONS.ADD;
     };
 
 export type NoteReducer = Reducer<State, Actions>;

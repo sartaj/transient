@@ -1,10 +1,21 @@
+/**
+ * Using a state+action+reducer based central state management system on pure functions
+ * Web storage and the Web Components act just listen to changes to the state and render accordingly.
+ * They can then update the state with the dispatch method.
+ * Calling the web storage and UI listeners "drivers" here as inspired by https://cycle.js.org/
+ */
 import { createWebStorage } from "../web-storage/web-storage.js";
 import { ACTIONS, isNoteState, store } from "./data/note.state.js";
 import { isPastCurrentTimestamp } from "./data/note.utils.js";
-import { NoteComponent } from "./note-component.component.js";
+
+// Importing the component defines the Web Component (see import)
+import { NotesContainer } from "./view/notes-container.component.js";
 
 const LOCALSTORAGE_KEY = "note-state";
 
+/**
+ * Driver to hydrate the store from local storage, and save updates to local storage.
+ */
 const localStorageDriver = async () => {
   const storage = createWebStorage({
     localStorageKey: LOCALSTORAGE_KEY,
@@ -14,14 +25,15 @@ const localStorageDriver = async () => {
   //   Init state with localstorage
   const state = await storage.getItem();
   if (state) {
-    // Add to state
+    // Hydrate the store from storage
     store.dispatch({
       type: ACTIONS.HYDRATE,
       payload: state,
     });
   } else {
+    // Add a note if none exist
     store.dispatch({
-      type: ACTIONS.CREATE,
+      type: ACTIONS.ADD,
     });
   }
 
@@ -31,7 +43,12 @@ const localStorageDriver = async () => {
   });
 };
 
-// Listen for changes and check if any notes have expired
+/**
+ * Special state listener that checks if any notes are expired.
+ * If so, it clears them.
+ * This could theoretically just be in the reducer, but having it here now
+ * so that it is easier to push the alert.
+ */
 const expirationListener = () => {
   store.listen((state) => {
     let notesCleared = false;
@@ -41,7 +58,7 @@ const expirationListener = () => {
       if (isPastCurrentTimestamp(note.expires)) {
         store.dispatch({
           type: ACTIONS.CLEAR,
-          payload: i,
+          payload: note.expires,
         });
       }
     });
@@ -52,14 +69,14 @@ const expirationListener = () => {
   });
 };
 
-const init = async () => {
+/**
+ * Main function to initialize the app.
+ */
+export const main = async () => {
   // Local Storage
   await localStorageDriver();
   await expirationListener();
 
   // DOM
-  customElements.define("note-component", NoteComponent);
-  document.body.appendChild(document.createElement("note-component"));
+  document.body.appendChild(document.createElement(NotesContainer));
 };
-
-init();
