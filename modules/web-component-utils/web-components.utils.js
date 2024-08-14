@@ -45,36 +45,3 @@ export const $ = (dom, selector) => {
     throw new Error("Element not found.");
   }
 };
-
-// const createElementMap = ({ dom, container, items, WebComponent, getKey }) => {
-//   const ATTRIBUTE_KEY = "key";
-//   const ATTRIBUTE_INDEX = "index";
-
-//   const currentElements = dom.querySelectorAll(WebComponent);
-
-//   const currentKeys = Array.from(currentElements).map((item) =>
-//     item.getAttribute(ATTRIBUTE_KEY)
-//   );
-
-//   // Loop through the notes and render the note item components if they don't exist yet.
-//   items.forEach((items, index) => {
-//     const keyValue = getKey(items);
-//     const indexOfItem = currentKeys.indexOf(keyValue);
-//     // Check if item already exists
-//     if (indexOfItem !== -1) {
-//       currentKeys.splice(indexOfItem, 1); // Remove the key from the array
-//       return;
-//     }
-//     // Add element to the container if it already doesn't exist.
-//     const component = document.createElement(WebComponent);
-//     component.setAttribute(ATTRIBUTE_INDEX, index); // Pass index to the child component
-//     component.setAttribute(ATTRIBUTE_KEY, keyValue); // Assuming the expiration is unique
-//     container.appendChild(component);
-//   });
-
-//   // Any items left in the array are expired and should be removed
-//   currentKeys.forEach((key) => {
-//     const item = dom.querySelector(`[${ATTRIBUTE_KEY}="${key}"]`);
-//     item.remove();
-//   });
-// };

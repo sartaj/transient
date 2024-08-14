@@ -3,11 +3,12 @@ import {
   $,
   handleError,
 } from "../../web-component-utils/web-components.utils.js";
-import { store } from "../data/note.state.js";
+import { ACTIONS, store } from "../data/note.state.js";
 
 import { NoteItem, NoteItemAttributes } from "./note-item.component.js";
 
 const VERSION = "#version";
+const ADD_NOTE = "#addNote";
 
 export class NotesContainerElement extends HTMLElement {
   constructor() {
@@ -22,12 +23,31 @@ export class NotesContainerElement extends HTMLElement {
       const html = await fetch(url).then((response) => response.text());
       this.shadowRoot.innerHTML = html;
 
+      // Hooks
+      $(this.shadowRoot, ADD_NOTE).addEventListener(
+        "click",
+        this.addNote.bind(this)
+      );
+
       // Render
       this.render();
     } catch (e) {
       alert("Failed loading notes container component.");
       handleError(e);
     }
+  }
+
+  disconnectedCallback() {
+    $(this.shadowRoot, ADD_NOTE).removeEventListener(
+      "click",
+      this.addNote.bind(this)
+    );
+  }
+
+  async addNote() {
+    store.dispatch({
+      type: ACTIONS.ADD,
+    });
   }
 
   async render() {
