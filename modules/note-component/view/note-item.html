@@ -1,0 +1,101 @@
+<style>
+  :host {
+    --input-text-size: 1.5em;
+    --button-text-size: 1.5em;
+    --caret-color: blue;
+    --px: 5px;
+  }
+  .textarea-container {
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    min-height: 400px;
+    height: 100%;
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+  }
+  .textarea {
+    font-family: monospace;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    padding: var(--px);
+    font-size: var(--input-text-size);
+    caret-color: var(--caret-color);
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+    resize: none;
+  }
+
+  @media only screen and (min-width: 768px) {
+    .textarea {
+      font-size: calc(var(--input-text-size) * 1.5);
+      max-width: 768px;
+    }
+  }
+
+  button {
+    padding: calc(var(--px) * 2);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: calc(var(--px));
+    margin: var(--px);
+    border: none;
+    font-size: var(--button-text-size);
+  }
+  .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--px);
+  }
+  .toolbar button {
+    filter: grayscale(1) contrast(0.5);
+    /* opacity: 0.5; */
+  }
+  .toolbar button:hover,
+  .toolbar button:active {
+    opacity: 0.8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
+  }
+  .days-left-container {
+    font-family: sans-serif;
+  }
+  .days-left-container > div:nth-child(1) {
+    font-size: calc(var(--input-text-size) * 0.7);
+  }
+  .days-left-container > div:nth-child(2) {
+    font-size: calc(var(--input-text-size) * 0.2);
+    text-transform: uppercase;
+  }
+  .note-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #clearButton {
+    display: flex;
+    align-items: center;
+  }
+</style>
+<div class="note-item">
+  <div class="textarea-container">
+    <textarea autofocus class="textarea" id="noteInput"></textarea>
+  </div>
+  <div class="toolbar">
+    <button id="clearButton" title="Clear Note">
+      <div class="days-left-container">
+        <div id="daysLeft"></div>
+        <div>Days Left</div>
+      </div>
+      🗑️
+    </button>
+    <!-- Hiding save for now -->
+    <button id="saveButton" title="Save Note" style="display: none">💾</button>
+  </div>
+</div>

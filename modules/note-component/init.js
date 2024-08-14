@@ -1,7 +1,8 @@
 import { createWebStorage } from "../web-storage/web-storage.js";
 import { ACTIONS, isNoteState, store } from "./data/note.state.js";
 import { isPastCurrentTimestamp } from "./data/note.utils.js";
-import { NoteComponent } from "./note-component.component.js";
+import "./view/notes-container.component.js";
+// import { NoteComponent } from "./note-component.component.js";
 
 const LOCALSTORAGE_KEY = "note-state";
 
@@ -58,8 +59,9 @@ const init = async () => {
   await expirationListener();
 
   // DOM
-  customElements.define("note-component", NoteComponent);
-  document.body.appendChild(document.createElement("note-component"));
+  // customElements.define("note-component", NoteComponent);
+  // document.body.appendChild(document.createElement("note-component"));
+  document.body.appendChild(document.createElement("notes-container"));
 };
 
 init();
