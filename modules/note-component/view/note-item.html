@@ -9,7 +9,6 @@
     flex: 1;
     flex-direction: column;
     width: 100%;
-    min-height: 300px;
     height: 100%;
     outline: none;
     border: none;
@@ -18,23 +17,35 @@
   }
   .textarea {
     font-family: monospace;
-    width: 100%;
-    height: 100%;
-    flex: 1;
     padding: var(--px);
     font-size: var(--input-text-size);
     caret-color: var(--caret-color);
     outline: none;
     border: none;
     background: transparent;
-    display: flex;
+  }
+
+  /* For auto resize, see input event listener */
+  textarea {
     resize: none;
+    overflow: hidden;
+    min-height: 50px;
+  }
+
+  .note-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #ffffff30;
+    margin: 20px auto;
+    border-radius: 8px;
+    padding: 5px;
   }
 
   @media only screen and (min-width: 768px) {
     .note-item {
       max-width: 768px;
-      margin: 0 auto;
     }
 
     .textarea {
@@ -77,11 +88,7 @@
     font-size: calc(var(--input-text-size) * 0.2);
     text-transform: uppercase;
   }
-  .note-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+
   #clearButton {
     display: flex;
     align-items: center;

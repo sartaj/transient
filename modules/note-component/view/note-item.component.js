@@ -7,7 +7,6 @@ import {
 } from "../../web-component-utils/web-components.utils.js";
 
 // Inputs
-const SAVE_BUTTON = "#saveButton";
 const CLEAR_BUTTON = "#clearButton";
 const NOTE_INPUT = "#noteInput";
 
@@ -48,7 +47,16 @@ export class NoteItemElement extends HTMLElement {
         this.clearNote.bind(this)
       );
 
-      window.addEventListener("keyup", this.handleKeyUp.bind(this), true);
+      $(this.shadowRoot, NOTE_INPUT).addEventListener(
+        "input",
+        this.handleInput.bind(this)
+      );
+
+      $(this.shadowRoot, NOTE_INPUT).addEventListener(
+        "keydown",
+        this.handleKeyDown.bind(this),
+        true
+      );
 
       // Render
       this.render();
@@ -59,21 +67,76 @@ export class NoteItemElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    $(this.shadowRoot, SAVE_BUTTON).removeEventListener(
-      "click",
-      this.saveNote.bind(this)
-    );
-
     $(this.shadowRoot, CLEAR_BUTTON).removeEventListener(
       "click",
       this.clearNote.bind(this)
     );
 
-    window.removeEventListener("keyup", this.handleKeyUp, true);
+    $(this.shadowRoot, NOTE_INPUT).removeEventListener(
+      "input",
+      this.handeInput.bind(this)
+    );
+
+    $(this.shadowRoot, NOTE_INPUT).removeEventListener(
+      "keydown",
+      this.handleKeyDown,
+      true
+    );
   }
 
-  handleKeyUp() {
+  autoResize() {
+    const element = $(this.shadowRoot, NOTE_INPUT);
+    console.log(element.scrollHeight);
+    element.style.height = "5px";
+    element.style.height = element.scrollHeight + "px";
+  }
+
+  handleInput() {
+    this.autoResize();
     this.saveNote();
+  }
+
+  handleKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default enter key behavior
+      this.insertNewLine(event);
+      this.autoResize();
+    }
+  }
+
+  /**
+   * Insert special markdown characters into the mix.
+   */
+  insertNewLine(event) {
+    const textarea = this.shadowRoot.querySelector(NOTE_INPUT);
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.slice(0, cursorPosition);
+    const lastLineBreakIndex = textBeforeCursor.lastIndexOf("\n");
+    const previousLine = textBeforeCursor.slice(lastLineBreakIndex + 1);
+
+    const listItemPatterns = [
+      /^-\s\[ \]/, // Pattern for "- [ ]"
+      /^[-*•]/, // Pattern for "-", "*", and "•"
+    ];
+    let prefix = "";
+
+    // Check if the previous line matches any of the patterns
+    for (const pattern of listItemPatterns) {
+      if (pattern.test(previousLine.trim())) {
+        prefix = previousLine.trim().match(pattern)[0] + " ";
+        break;
+      }
+    }
+
+    event.preventDefault(); // Prevent the default enter key behavior
+
+    const textAfterCursor = textarea.value.slice(cursorPosition);
+    const newText = textBeforeCursor + "\n" + prefix + textAfterCursor;
+    textarea.value = newText;
+
+    // Move the cursor to the end of the inserted text
+    const newCursorPosition = cursorPosition + 1 + prefix.length;
+    textarea.selectionStart = textarea.selectionEnd = newCursorPosition;
   }
 
   async clearNote() {
@@ -106,6 +169,7 @@ export class NoteItemElement extends HTMLElement {
     const dom = this.shadowRoot;
 
     verifyInput($(dom, NOTE_INPUT)).value = this.noteDefaultValue;
+    this.autoResize();
 
     $(dom, DAYS_LEFT).innerHTML = String(
       timestampToDaysFromNow(this.noteExpires)
