@@ -2,7 +2,7 @@
 
 📱            |  💻
 :-------------------------:|:-------------------------:
-<img src="./icons/screenshots/mobile.png" height="400" /> | <img src="./icons/screenshots/desktop.png" height="400"/>
+<img src="./icons/screenshots/mobile.png" max-height="400" /> | <img src="./icons/screenshots/desktop.png" max-height="400"/>
 
 
 Useful for things like grocery lists, daily todos, quick notes, etc.
