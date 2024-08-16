@@ -18,3 +18,16 @@ export const isPastCurrentTimestamp = (isoString) => {
 
   return inputDate < now;
 };
+
+export const percentTimeLeft = (startDays, expirationDate) => {
+  const expiration = new Date(expirationDate);
+  const now = new Date();
+
+  const startDate = new Date(expiration);
+  startDate.setDate(expiration.getDate() - startDays); // Timer started days before the expiration
+
+  const totalTime = expiration.valueOf() - startDate.valueOf(); // Total time in milliseconds
+  const timeLeft = expiration.valueOf() - now.valueOf(); // Time left in milliseconds
+
+  return Math.max(timeLeft / totalTime, 0); // Calculate percentage and ensure it's not negative
+};

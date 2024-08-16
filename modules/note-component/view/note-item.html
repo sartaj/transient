@@ -90,6 +90,35 @@
     text-transform: uppercase;
   }
 
+  .countdown-viz {
+    position: relative;
+    float: left;
+    width: calc(var(--button-text-size) * 2.6);
+    height: calc(var(--button-text-size) * 2.6);
+  }
+
+  .countdown-viz .circle {
+    position: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .countdown-viz .time {
+    font-family: sans-serif;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .countdown-viz .time button {
+    width: calc(var(--button-text-size) * 3.1);
+    height: calc(var(--button-text-size) * 3.1);
+    margin: 0;
+  }
+
   @media only screen and (min-width: 768px) {
     .note-item {
       max-width: 768px;
@@ -105,6 +134,15 @@
       width: calc(var(--large-button-text-size) * 3);
       height: calc(var(--large-button-text-size) * 3);
     }
+    .countdown-viz {
+      width: calc(var(--large-button-text-size) * 3);
+      height: calc(var(--large-button-text-size) * 3);
+    }
+    .countdown-viz .time button {
+      width: calc(var(--large-button-text-size) * 2.8);
+      height: calc(var(--large-button-text-size) * 2.8);
+      margin: 0;
+    }
   }
 </style>
 <div class="note-item">
@@ -112,12 +150,44 @@
     <textarea class="textarea" id="noteInput"></textarea>
   </div>
   <div class="toolbar">
-    <button id="resetTimerButton" title="Days Left">
-      <div class="days-left-container">
-        <div id="daysLeft"></div>
-        <div>Days</div>
+    <!-- Percent Countdown -->
+    <div id="percentCountdown">
+      <div class="countdown-viz">
+        <div class="time">
+          <button id="resetTimerButton" title="Days Left">
+            <div class="days-left-container">
+              <!-- Days Left Var -->
+              <div id="daysLeft"></div>
+              <div>Days</div>
+            </div>
+          </button>
+        </div>
+        <div class="circle">
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <!-- stroke-dashoffset is set based on % of 360 -->
+            <circle
+              id="percentCountdown"
+              cx="50"
+              cy="50"
+              r="45"
+              stroke="black"
+              stroke-opacity="0.3"
+              stroke-width="5"
+              fill="transparent"
+              stroke-dasharray="360"
+              stroke-dashoffset="${}"
+              class="resizable-circle"
+            />
+          </svg>
+        </div>
       </div>
-    </button>
+    </div>
+
     <button id="clearButton" title="Clear Note">🗑️</button>
   </div>
 </div>

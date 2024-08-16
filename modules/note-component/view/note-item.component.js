@@ -7,12 +7,14 @@ import { DEFAULT_EXPIRATION, ACTIONS, store } from "../data/note.state.js";
 import {
   timestampToDaysFromNow,
   daysFromNowToTimestamp,
+  percentTimeLeft,
 } from "../data/note.utils.js";
 
 // Inputs
 const CLEAR_BUTTON = "#clearButton";
 const RESET_TIMER = "#resetTimerButton";
 const NOTE_INPUT = "#noteInput";
+const PERCENT_COUNTOWN = "#percentCountdown";
 
 // Template elements
 const DAYS_LEFT = "#daysLeft";
@@ -171,7 +173,10 @@ export class NoteItemElement extends HTMLElement {
         $(this.shadowRoot, DAYS_LEFT).innerHTML = String(
           timestampToDaysFromNow(daysFromNowToTimestamp(DEFAULT_EXPIRATION))
         );
-        store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteExpires });
+        store.dispatch({
+          type: ACTIONS.RESET_TIMER,
+          payload: this.noteExpires,
+        });
       }
     } catch (e) {
       handleError(e);
@@ -204,12 +209,22 @@ export class NoteItemElement extends HTMLElement {
   async render() {
     const dom = this.shadowRoot;
 
+    // Render the default value and resize accordingly
     verifyInput($(dom, NOTE_INPUT)).value = this.noteDefaultValue;
     this.autoResize();
 
-    $(dom, DAYS_LEFT).innerHTML = String(
-      timestampToDaysFromNow(this.noteExpires)
-    );
+    // Get percentage of time left
+    const percent = percentTimeLeft(DEFAULT_EXPIRATION, this.noteExpires);
+    // Invert the percentage to show the time left, and of 360 (see svg)
+    const circlePercent = (1 - percent) * 360;
+
+    // Set the countdown circle stroke-dash-offset
+    const countdownCircle = $(dom, PERCENT_COUNTOWN);
+    countdownCircle.style.strokeDashoffset = String(circlePercent);
+
+    // Render the days from now
+    let daysFromNow = timestampToDaysFromNow(this.noteExpires);
+    $(dom, DAYS_LEFT).innerHTML = String(daysFromNow);
   }
 }
 
