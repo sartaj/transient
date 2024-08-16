@@ -1,7 +1,8 @@
 <style>
   :host {
-    --input-text-size: 1.5em;
-    --button-text-size: 1.5em;
+    --input-text-size: 1.4em;
+    --button-text-size: 0.8em;
+    --large-button-text-size: 1em;
     --caret-color: blue;
     --px: 5px;
   }
@@ -34,13 +35,59 @@
 
   .note-item {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 
     background: #ffffff30;
-    margin: calc(var(--px) * 4) calc(var(--px) * 2);
+    margin: calc(var(--px) * 3) calc(var(--px) * 2);
     border-radius: 8px;
     padding: 5px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--px);
+  }
+
+  .toolbar button {
+    filter: grayscale(1) contrast(0.5);
+  }
+
+  button {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    display: flex;
+    margin: var(--px);
+    padding: calc(var(--px) * 2);
+    border-radius: calc(var(--button-text-size) * 3);
+    font-size: var(--button-text-size);
+    width: calc(var(--button-text-size) * 3);
+    height: calc(var(--button-text-size) * 3);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .toolbar button:hover,
+  .toolbar button:active {
+    opacity: 0.8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
+  }
+
+  .days-left-container {
+    font-family: sans-serif;
+  }
+  .days-left-container > div:nth-child(1) {
+    font-size: calc(var(--input-text-size) * 0.7);
+  }
+  .days-left-container > div:nth-child(2) {
+    font-size: calc(var(--input-text-size) * 0.3);
+    text-transform: uppercase;
   }
 
   @media only screen and (min-width: 768px) {
@@ -50,62 +97,27 @@
     }
 
     .textarea {
-      font-size: calc(var(--input-text-size) * 1.1);
+      font-size: calc(var(--input-text-size) * 1.05);
     }
-  }
-
-  button {
-    padding: calc(var(--px) * 2);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: calc(var(--px));
-    margin: var(--px);
-    border: none;
-    font-size: var(--button-text-size);
-  }
-  .toolbar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: var(--px);
-  }
-  .toolbar button {
-    filter: grayscale(1) contrast(0.5);
-    /* opacity: 0.5; */
-  }
-  .toolbar button:hover,
-  .toolbar button:active {
-    opacity: 0.8;
-    cursor: pointer;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
-  }
-  .days-left-container {
-    font-family: sans-serif;
-  }
-  .days-left-container > div:nth-child(1) {
-    font-size: calc(var(--input-text-size) * 0.7);
-  }
-  .days-left-container > div:nth-child(2) {
-    font-size: calc(var(--input-text-size) * 0.2);
-    text-transform: uppercase;
-  }
-
-  #clearButton {
-    display: flex;
-    align-items: center;
+    button {
+      border-radius: calc(var(--large-button-text-size) * 3);
+      font-size: var(--large-button-text-size);
+      width: calc(var(--large-button-text-size) * 3);
+      height: calc(var(--large-button-text-size) * 3);
+    }
   }
 </style>
 <div class="note-item">
   <div class="textarea-container">
-    <textarea autofocus class="textarea" id="noteInput"></textarea>
+    <textarea class="textarea" id="noteInput"></textarea>
   </div>
   <div class="toolbar">
-    <button id="clearButton" title="Clear Note">
+    <button id="resetTimerButton" title="Days Left">
       <div class="days-left-container">
         <div id="daysLeft"></div>
-        <div>Days Left</div>
+        <div>Days</div>
       </div>
-      🗑️
     </button>
+    <button id="clearButton" title="Clear Note">🗑️</button>
   </div>
 </div>

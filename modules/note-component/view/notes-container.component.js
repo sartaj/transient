@@ -63,6 +63,8 @@ export class NotesContainerElement extends HTMLElement {
 
     const keyAttr = NoteItemAttributes.NoteExpires;
 
+    let componentJustMounted = true;
+
     // Listen for changes to the note state and render the child components
     store.listen((state) => {
       const notesContainer = $(dom, "#notesContainer");
@@ -72,15 +74,16 @@ export class NotesContainerElement extends HTMLElement {
         item.getAttribute(keyAttr)
       );
 
-      // Loop through the notes and render the note item components if they don't exist yet.
+      // Loop through the notes and render the note item components if they don't exist yet
       state.notes.forEach((note) => {
         const indexOfItem = noteKeys.indexOf(note.expires);
-        // Check if item already exists
+        // Check if item already exists, if it does, ignore re-rendering
         if (indexOfItem !== -1) {
           noteKeys.splice(indexOfItem, 1); // Remove the key from the array
           return;
         }
-        // Add element to the container if it already doesn't exist.
+
+        // Add element to the container if it already doesn't exist
         const noteComponent = document.createElement(NoteItem);
 
         // Assuming the expiration is unique
@@ -94,7 +97,9 @@ export class NotesContainerElement extends HTMLElement {
           NoteItemAttributes.NoteDefaultValue,
           note.value
         );
-        notesContainer.appendChild(noteComponent);
+
+        // Prepend because we are going backwards
+        notesContainer.prepend(noteComponent);
       });
 
       // Any items left in the array are expired and should be removed
@@ -102,6 +107,17 @@ export class NotesContainerElement extends HTMLElement {
         const item = $(dom, `[${keyAttr}="${key}"]`);
         item.remove();
       });
+
+      // Focus on the first note when the component just mounted
+      if (componentJustMounted) {
+        componentJustMounted = false;
+        // Focus on the first note. Hack the next frame by setting a timeout
+        setTimeout(() => {
+          const firstNote = $(dom, NoteItem);
+          const firstTextArea = $(firstNote.shadowRoot, "textarea");
+          firstTextArea.focus();
+        }, 300);
+      }
     });
   }
 }

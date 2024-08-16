@@ -19,6 +19,7 @@ export declare enum ACTIONS {
   "UPDATE" = "UPDATE",
   "CLEAR" = "CLEAR",
   "ADD" = "ADD",
+  "RESET_TIMER" = "RESET_TIMER",
   "HYDRATE" = "HYDRATE",
 }
 
@@ -39,12 +40,18 @@ export type Actions =
       payload: Expires;
     }
   | {
+      type: typeof ACTIONS.RESET_TIMER;
+      payload: Expires;
+    }
+  | {
       type: typeof ACTIONS.ADD;
     };
 
 export type NoteReducer = Reducer<State, Actions>;
 
 export type NoteStore = Store<State, Actions>;
+
+export declare const DEFAULT_EXPIRATION = 3;
 
 export type IsNote = (obj: unknown) => obj is Note;
 export declare const isNoteObj: IsNote;

@@ -9,7 +9,7 @@ import { daysFromNowToTimestamp } from "./note.utils.js";
 /**
  * Default expiration in days
  */
-const DEFAULT_EXPIRATION = 3;
+export const DEFAULT_EXPIRATION = 3;
 
 /**
  * todo: make an array of items
@@ -62,10 +62,23 @@ const reducer = (state, action) => {
           notes: state.notes.filter((note) => note.expires !== action.payload),
         };
       }
+    case ACTIONS.RESET_TIMER:
+      return {
+        ...state,
+        notes: state.notes.map((note) => {
+          if (note.expires !== action.payload) {
+            return note;
+          }
+          return {
+            ...note,
+            expires: daysFromNowToTimestamp(DEFAULT_EXPIRATION),
+          };
+        }),
+      };
     case ACTIONS.ADD:
       return {
         ...state,
-        notes: [...state.notes, createExpiringNote()],
+        notes: [createExpiringNote(), ...state.notes],
       };
     default:
       return state;

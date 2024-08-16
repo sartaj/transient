@@ -1,13 +1,17 @@
-import { ACTIONS, isNoteObj, store } from "../data/note.state.js";
-import { timestampToDaysFromNow } from "../data/note.utils.js";
 import {
   $,
   handleError,
   verifyInput,
 } from "../../web-component-utils/web-components.utils.js";
+import { DEFAULT_EXPIRATION, ACTIONS, store } from "../data/note.state.js";
+import {
+  timestampToDaysFromNow,
+  daysFromNowToTimestamp,
+} from "../data/note.utils.js";
 
 // Inputs
 const CLEAR_BUTTON = "#clearButton";
+const RESET_TIMER = "#resetTimerButton";
 const NOTE_INPUT = "#noteInput";
 
 // Template elements
@@ -41,6 +45,11 @@ export class NoteItemElement extends HTMLElement {
         this.clearNote.bind(this)
       );
 
+      $(this.shadowRoot, RESET_TIMER).addEventListener(
+        "click",
+        this.resetTimer.bind(this)
+      );
+
       $(this.shadowRoot, NOTE_INPUT).addEventListener(
         "input",
         this.handleInput.bind(this)
@@ -66,6 +75,11 @@ export class NoteItemElement extends HTMLElement {
       this.clearNote.bind(this)
     );
 
+    $(this.shadowRoot, RESET_TIMER).removeEventListener(
+      "click",
+      this.resetTimer.bind(this)
+    );
+
     $(this.shadowRoot, NOTE_INPUT).removeEventListener(
       "input",
       this.handleInput.bind(this)
@@ -80,7 +94,6 @@ export class NoteItemElement extends HTMLElement {
 
   autoResize() {
     const element = $(this.shadowRoot, NOTE_INPUT);
-    console.log(element.scrollHeight);
     element.style.height = "5px";
     element.style.height = element.scrollHeight + "px";
   }
@@ -145,6 +158,19 @@ export class NoteItemElement extends HTMLElement {
     try {
       if (window.confirm("Clear Note?")) {
         verifyInput($(this.shadowRoot, NOTE_INPUT)).value = "";
+        store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteExpires });
+      }
+    } catch (e) {
+      handleError(e);
+    }
+  }
+
+  async resetTimer() {
+    try {
+      if (window.confirm("Reset Timer?")) {
+        $(this.shadowRoot, DAYS_LEFT).innerHTML = String(
+          timestampToDaysFromNow(daysFromNowToTimestamp(DEFAULT_EXPIRATION))
+        );
         store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteExpires });
       }
     } catch (e) {
