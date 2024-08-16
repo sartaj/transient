@@ -45,6 +45,7 @@ export type Actions =
     }
   | {
       type: typeof ACTIONS.ADD;
+      payload?: string;
     };
 
 export type NoteReducer = Reducer<State, Actions>;

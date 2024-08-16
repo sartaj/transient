@@ -2,7 +2,12 @@
   "name": "Transient Note",
   "short_name": "Transient",
   "description": "Temporary Notes Designed To Disappear",
+  "categories": ["productivity", "utilities"],
   "start_url": "./",
+  "display": "standalone",
+  "theme_color": "#ded6cb",
+  "background_color": "#ded6cb",
+  "orientation": "any",
   "icons": [
     {
       "src": "./icons/android-chrome-192x192.png",
@@ -15,7 +20,20 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ded6cb",
-  "background_color": "#ded6cb",
-  "display": "standalone"
+  "screenshots": [
+    {
+      "src": "./icons/screenshots/desktop.png",
+      "sizes": "2048x1200",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Transient Note Desktop"
+    },
+    {
+      "src": "./icons/screenshots/mobile.png",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Transient Note Mobile"
+    }
+  ]
 }

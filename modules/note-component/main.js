@@ -13,6 +13,18 @@ import { NotesContainer } from "./view/notes-container.component.js";
 
 const LOCALSTORAGE_KEY = "note-state";
 
+const INTRO_MESSAGE = `Welcome To Transient!
+The Disappearing Notes App For Transient Thoughts
+
+• 💣 Notes will automatically delete in a few days. 
+• 📲 Installable: Add To Home Screen / Install today.
+• 😶‍🌫️ Fully private: Data stays on device.
+
+• ➕ Add Note: Tap the plus icon to add a new note.
+• 📝 Reset Timer: Tap the timer on the bottom to reset it.
+• 🗑️ Delete Note: Tap the trash icon to delete a note.
+`;
+
 /**
  * Driver to hydrate the store from local storage, and save updates to local storage.
  */
@@ -34,6 +46,7 @@ const localStorageDriver = async () => {
     // Add a note if none exist
     store.dispatch({
       type: ACTIONS.ADD,
+      payload: INTRO_MESSAGE,
     });
   }
 

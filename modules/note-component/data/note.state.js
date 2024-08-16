@@ -20,9 +20,9 @@ const initial = { notes: [] };
 /**
  * @returns {Note}
  */
-const createExpiringNote = () => {
+const createExpiringNote = (value = "") => {
   return {
-    value: "",
+    value,
     // Set in date format
     expires: daysFromNowToTimestamp(DEFAULT_EXPIRATION),
   };
@@ -78,7 +78,7 @@ const reducer = (state, action) => {
     case ACTIONS.ADD:
       return {
         ...state,
-        notes: [createExpiringNote(), ...state.notes],
+        notes: [createExpiringNote(action.payload), ...state.notes],
       };
     default:
       return state;
