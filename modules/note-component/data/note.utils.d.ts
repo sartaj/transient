@@ -12,3 +12,11 @@ export declare const timestampToDaysFromNow: (timestamp: string) => number;
  * Check if a timestamp is in the past
  */
 export declare const isPastCurrentTimestamp: (timestamp: string) => boolean;
+
+/**
+ * Check if a timestamp is in the past
+ */
+export declare const percentTimeLeft: (
+  startDays: number,
+  expirationDate: string
+) => number;
