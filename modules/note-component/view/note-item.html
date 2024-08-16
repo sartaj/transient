@@ -38,7 +38,7 @@
     align-items: center;
 
     background: #ffffff30;
-    margin: 20px auto;
+    margin: calc(var(--px) * 4) calc(var(--px) * 2);
     border-radius: 8px;
     padding: 5px;
   }
@@ -46,6 +46,7 @@
   @media only screen and (min-width: 768px) {
     .note-item {
       max-width: 768px;
+      margin: calc(var(--px) * 4) auto;
     }
 
     .textarea {
