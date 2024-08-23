@@ -25,26 +25,26 @@ export declare enum ACTIONS {
 
 export type Actions =
   | {
-      type: typeof ACTIONS.HYDRATE;
+      type: ACTIONS.HYDRATE;
       payload: State;
     }
   | {
-      type: typeof ACTIONS.UPDATE;
+      type: ACTIONS.UPDATE;
       payload: {
         key: Expires;
         value: string;
       };
     }
   | {
-      type: typeof ACTIONS.CLEAR;
+      type: ACTIONS.CLEAR;
       payload: Expires;
     }
   | {
-      type: typeof ACTIONS.RESET_TIMER;
+      type: ACTIONS.RESET_TIMER;
       payload: Expires;
     }
   | {
-      type: typeof ACTIONS.ADD;
+      type: ACTIONS.ADD;
       payload?: string;
     };
 

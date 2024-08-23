@@ -31,10 +31,19 @@ const createExpiringNote = (value = "") => {
 /**
  * @type {import('./note.state').NoteReducer}
  */
-const reducer = (state, action) => {
+export const reducer = (state, action) => {
   switch (action.type) {
     case ACTIONS.HYDRATE:
-      return action.payload;
+      // Sort ascending, because the renderer will prepend.
+      const sortedNotes = action.payload.notes.sort((a, b) =>
+        a.expires.localeCompare(b.expires)
+      );
+
+      return {
+        ...action.payload,
+        // Sort notes by expiration expires
+        notes: sortedNotes,
+      };
     case ACTIONS.UPDATE:
       return {
         ...state,
@@ -85,15 +94,12 @@ const reducer = (state, action) => {
   }
 };
 
-/**
- * @type {import('./note.state').ACTIONS}
- */
-export const ACTIONS = {
+export const ACTIONS = Object.freeze({
   UPDATE: "UPDATE",
   CLEAR: "CLEAR",
   ADD: "ADD",
   HYDRATE: "HYDRATE",
-};
+});
 
 /**
  * @type {import('./note.state').IsNote}
