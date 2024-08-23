@@ -3,13 +3,16 @@ import {
   $,
   $all,
   handleError,
+  verifyButton,
 } from "../../web-component-utils/web-components.utils.js";
 import { ACTIONS, store } from "../data/note.state.js";
-
 import { NoteItem, NoteItemAttributes } from "./note-item.component.js";
 
 const VERSION = "#version";
 const ADD_NOTE = "#addNote";
+const ACTIVE_NOTES_LIST = "#activeNotesList";
+const SHOW_EXPIRED_NOTES = "#showExpiredNotes";
+const EXPIRED_LIST = "#expiredNotesList";
 
 export class NotesContainerElement extends HTMLElement {
   constructor() {
@@ -33,6 +36,11 @@ export class NotesContainerElement extends HTMLElement {
         this.addNote.bind(this)
       );
 
+      $(this.shadowRoot, SHOW_EXPIRED_NOTES).addEventListener(
+        "click",
+        this.showExpiredNotes.bind(this)
+      );
+
       // Render
       this.render();
     } catch (e) {
@@ -46,6 +54,11 @@ export class NotesContainerElement extends HTMLElement {
       "click",
       this.addNote.bind(this)
     );
+
+    $(this.shadowRoot, SHOW_EXPIRED_NOTES).removeEventListener(
+      "click",
+      this.showExpiredNotes.bind(this)
+    );
   }
 
   async addNote() {
@@ -54,28 +67,39 @@ export class NotesContainerElement extends HTMLElement {
     });
   }
 
-  async render() {
+  async showExpiredNotes() {
     const dom = this.shadowRoot;
-    // Listen for the version from the service worker, and render
-    onVersion((version) => {
-      $(dom, VERSION).innerHTML = `v.${version}`;
+    this.renderList(EXPIRED_LIST, "expiredNotes", () => {
+      const expiredNotesEl = verifyButton($(dom, SHOW_EXPIRED_NOTES));
+      expiredNotesEl.innerHTML = "Expired Notes";
+      expiredNotesEl.style.background = "transparent";
+      expiredNotesEl.disabled = true;
+      expiredNotesEl.style.cursor = "default";
     });
+  }
 
-    const keyAttr = NoteItemAttributes.NoteExpires;
+  /**
+   *
+   * @param {string} notesListId
+   * @param {"notes" | "expiredNotes"} notesKey
+   * @param {Function} [afterRender]
+   */
+  async renderList(notesListId, notesKey, afterRender) {
+    const dom = this.shadowRoot;
 
-    let componentJustMounted = true;
+    const keyAttr = NoteItemAttributes.NoteId;
 
     // Listen for changes to the note state and render the child components
     store.listen((state) => {
-      const notesContainer = $(dom, "#notesContainer");
+      const notesContainer = $(dom, notesListId);
 
-      const noteItems = $all(dom, NoteItem);
+      const noteItems = $all(notesContainer, NoteItem);
       const noteKeys = Array.from(noteItems).map((item) =>
         item.getAttribute(keyAttr)
       );
 
       // Loop through the notes and render the note item components if they don't exist yet
-      state.notes.forEach((note) => {
+      state[notesKey].forEach((note) => {
         const indexOfItem = noteKeys.indexOf(note.expires);
         // Check if item already exists, if it does, ignore re-rendering
         if (indexOfItem !== -1) {
@@ -86,10 +110,19 @@ export class NotesContainerElement extends HTMLElement {
         // Add element to the container if it already doesn't exist
         const noteComponent = document.createElement(NoteItem);
 
-        // Assuming the expiration is unique
+        // Assuming the id is unique
+        noteComponent.setAttribute(NoteItemAttributes.NoteId, note.id);
+
+        // Set expiration
         noteComponent.setAttribute(
           NoteItemAttributes.NoteExpires,
           note.expires
+        );
+
+        // Set expiration
+        noteComponent.setAttribute(
+          NoteItemAttributes.NoteDisabled,
+          note.disabled
         );
 
         // Set default value
@@ -108,6 +141,22 @@ export class NotesContainerElement extends HTMLElement {
         item.remove();
       });
 
+      // Run the after render hook
+      if (afterRender) {
+        afterRender();
+      }
+    });
+  }
+
+  async render() {
+    const dom = this.shadowRoot;
+    // Listen for the version from the service worker, and render
+    onVersion((version) => {
+      $(dom, VERSION).innerHTML = `v.${version}`;
+    });
+
+    let componentJustMounted = true;
+    await this.renderList(ACTIVE_NOTES_LIST, "notes", () => {
       // Focus on the first note when the component just mounted
       if (componentJustMounted) {
         componentJustMounted = false;

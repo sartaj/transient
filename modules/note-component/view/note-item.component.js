@@ -20,14 +20,32 @@ const PERCENT_COUNTOWN = "#percentCountdown";
 const DAYS_LEFT = "#daysLeft";
 
 export const NoteItemAttributes = {
+  NoteId: "note-id",
   NoteExpires: "note-expires",
   NoteDefaultValue: "note-default-value",
+  NoteDisabled: "note-disabled",
 };
 
 export class NoteItemElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+  }
+
+  get noteId() {
+    return this.getAttribute(NoteItemAttributes.NoteId) || "0";
+  }
+
+  get noteExpires() {
+    return this.getAttribute(NoteItemAttributes.NoteExpires) || "0";
+  }
+
+  get noteDefaultValue() {
+    return this.getAttribute(NoteItemAttributes.NoteDefaultValue) || "";
+  }
+
+  get noteDisabled() {
+    return this.getAttribute(NoteItemAttributes.NoteDisabled) || "";
   }
 
   async connectedCallback() {
@@ -160,7 +178,7 @@ export class NoteItemElement extends HTMLElement {
     try {
       if (window.confirm("Clear Note?")) {
         verifyInput($(this.shadowRoot, NOTE_INPUT)).value = "";
-        store.dispatch({ type: ACTIONS.CLEAR, payload: this.noteExpires });
+        store.dispatch({ type: ACTIONS.CLEAR, payload: { id: this.noteId } });
       }
     } catch (e) {
       handleError(e);
@@ -175,20 +193,12 @@ export class NoteItemElement extends HTMLElement {
         );
         store.dispatch({
           type: ACTIONS.RESET_TIMER,
-          payload: this.noteExpires,
+          payload: { id: this.noteId },
         });
       }
     } catch (e) {
       handleError(e);
     }
-  }
-
-  get noteExpires() {
-    return this.getAttribute(NoteItemAttributes.NoteExpires) || "0";
-  }
-
-  get noteDefaultValue() {
-    return this.getAttribute(NoteItemAttributes.NoteDefaultValue) || "";
   }
 
   async saveNote() {
@@ -197,8 +207,8 @@ export class NoteItemElement extends HTMLElement {
       store.dispatch({
         type: ACTIONS.UPDATE,
         payload: {
+          id: this.noteId,
           value: noteValue,
-          key: this.noteExpires,
         },
       });
     } catch (e) {
@@ -225,6 +235,10 @@ export class NoteItemElement extends HTMLElement {
     // Render the days from now
     let daysFromNow = timestampToDaysFromNow(this.noteExpires);
     $(dom, DAYS_LEFT).innerHTML = String(daysFromNow);
+
+    if (this.noteDisabled) {
+      $(dom, NOTE_INPUT).setAttribute("disabled", true);
+    }
   }
 }
 

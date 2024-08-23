@@ -20,7 +20,8 @@
     font-size: 0.9em;
     padding: calc(var(--px) * 2);
   }
-  .add-note {
+
+  .action {
     margin: calc(var(--px) * 3) calc(var(--px) * 2);
     display: flex;
     justify-content: center;
@@ -33,25 +34,27 @@
     border: none;
     font-size: var(--button-text-size);
   }
-
   button:hover,
   button:active {
     opacity: 0.8;
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
   }
-
-  .add-note button {
+  .action button {
     width: 100%;
     max-width: 400px;
   }
 </style>
 <div class="container">
   <div>
-    <div class="add-note">
+    <div class="action">
       <button id="addNote">+</button>
     </div>
-    <div id="notesContainer"></div>
+    <div id="activeNotesList"></div>
+    <div class="action">
+      <button id="showExpiredNotes">Show Expired</button>
+    </div>
+    <div id="expiredNotesList"></div>
   </div>
   <div class="footer">
     <div id="version"></div>

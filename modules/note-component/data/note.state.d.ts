@@ -4,15 +4,19 @@ import {
 } from "../../create-reducer-store/create-reducer-store";
 
 type Expires = string;
+type ID = string;
 
 export type Note = {
-  /** Expires doubles as unique key */
+  /** ID is the original unique key for db storage */
+  id: ID;
   expires: Expires;
+  expired: boolean;
   value: string;
 };
 
 type State = {
   notes: Note[];
+  expiredNotes: Note[];
 };
 
 export declare enum ACTIONS {
@@ -31,21 +35,27 @@ export type Actions =
   | {
       type: ACTIONS.UPDATE;
       payload: {
-        key: Expires;
+        id: ID;
+        value: string;
+      };
+    }
+  | {
+      type: ACTIONS.RESET_TIMER;
+      payload: {
+        id: ID;
+      };
+    }
+  | {
+      type: ACTIONS.ADD;
+      payload?: {
         value: string;
       };
     }
   | {
       type: ACTIONS.CLEAR;
-      payload: Expires;
-    }
-  | {
-      type: ACTIONS.RESET_TIMER;
-      payload: Expires;
-    }
-  | {
-      type: ACTIONS.ADD;
-      payload?: string;
+      payload: {
+        id: ID;
+      };
     };
 
 export type NoteReducer = Reducer<State, Actions>;

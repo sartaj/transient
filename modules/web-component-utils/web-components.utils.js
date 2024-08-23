@@ -28,6 +28,19 @@ export const verifyInput = (element) => {
 };
 
 /**
+ * Ultra strict type guard check to verify query elements are input elements.
+ * @param {HTMLButtonElement | null} element
+ * @returns {HTMLButtonElement}
+ */
+export const verifyButton = (element) => {
+  if (element instanceof HTMLButtonElement) {
+    return element;
+  } else {
+    throw new Error("Element is not an button element.");
+  }
+};
+
+/**
  * Safe query selector for shadow DOM that passes ts strict checks.
  *
  * @param {ShadowRoot | null} dom - The DOM element to search within.
@@ -49,7 +62,7 @@ export const $ = (dom, selector) => {
 /**
  * Safe query selector for shadow DOM that passes ts strict checks.
  *
- * @param {ShadowRoot | null} dom - The DOM element to search within.
+ * @param {ShadowRoot | HTMLElement | null} dom - The DOM element to search within.
  * @param {string} selector - The CSS selector to match against.
  * @returns {Element[]} - The first element that matches the selector.
  */

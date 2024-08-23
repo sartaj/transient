@@ -2,7 +2,7 @@
  * Store to subscribe and dispatch actions.
  */
 export type Store<State extends object, Action extends object> = {
-  listen: (fn: (s: State) => void) => void;
+  listen: (fn: (s: State, a: Action) => void) => void;
   dispatch: (action: Action) => void;
 };
 

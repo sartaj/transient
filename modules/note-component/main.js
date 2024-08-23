@@ -4,10 +4,10 @@
  * They can then update the state with the dispatch method.
  * Calling the web storage and UI listeners "drivers" here as inspired by https://cycle.js.org/
  */
-import { createWebStorage } from "../web-storage/web-storage.js";
-import { ACTIONS, isNoteState, store } from "./data/note.state.js";
+import { createIndexedDBStorage } from "../web-storage/web-storage.js";
+import { ACTIONS, store } from "./data/note.state.js";
 import { isPastCurrentTimestamp } from "./data/note.utils.js";
-
+import { debounce } from "../data-utils/data.utils.js";
 // Importing the component defines the Web Component (see import)
 import { NotesContainer } from "./view/notes-container.component.js";
 
@@ -29,57 +29,73 @@ The Disappearing Notes App For Transient Thoughts
  * Driver to hydrate the store from local storage, and save updates to local storage.
  */
 const localStorageDriver = async () => {
-  const storage = createWebStorage({
-    localStorageKey: LOCALSTORAGE_KEY,
-    validate: isNoteState,
-  });
+  const storage = createIndexedDBStorage(
+    "TransientNoteDB",
+    "TransientNotesStore"
+  );
 
   //   Init state with localstorage
-  const state = await storage.getItem();
-  if (state) {
-    // Hydrate the store from storage
-    store.dispatch({
-      type: ACTIONS.HYDRATE,
-      payload: state,
-    });
-  } else {
+  const activeNotes = (await storage.list("expired", false)) || [];
+  const expiredNotes = (await storage.list("expired", true)) || [];
+  console.log("AAA", activeNotes);
+
+  const showIntro = activeNotes.length === 0 && expiredNotes.length === 0;
+  if (showIntro) {
     // Add a note if none exist
     store.dispatch({
       type: ACTIONS.ADD,
-      payload: INTRO_MESSAGE,
+      payload: {
+        value: INTRO_MESSAGE,
+      },
+    });
+  } else {
+    // Hydrate the store from storage
+    store.dispatch({
+      type: ACTIONS.HYDRATE,
+      payload: {
+        notes: activeNotes,
+        expiredNotes,
+      },
     });
   }
 
-  // Listen for changes
-  store.listen(async (state) => {
-    await storage.setItem(state);
-  });
-};
-
-/**
- * Special state listener that checks if any notes are expired.
- * If so, it clears them.
- * This could theoretically just be in the reducer, but having it here now
- * so that it is easier to push the alert.
- */
-const expirationListener = () => {
-  store.listen((state) => {
-    let notesCleared = false;
-    // Check if any notes have expired
-    state.notes.forEach((note, i) => {
-      // If note is expired, clear it
-      if (isPastCurrentTimestamp(note.expires)) {
-        store.dispatch({
-          type: ACTIONS.CLEAR,
-          payload: note.expires,
-        });
-      }
-    });
-    // Notify user if any notes were cleared
-    if (notesCleared) {
-      alert("Note expired.");
+  /**
+   * @param {import('./data/note.state.js').State} state
+   * @param {import('./data/note.state.js').Actions} action
+   */
+  const listener = async (state, action) => {
+    console.log(state, action);
+    // Delete if note was cleared
+    if (action.type === ACTIONS.CLEAR) {
+      await storage.removeItem(action.payload.id);
     }
-  });
+    // Update if note was updated
+    if (action.type === ACTIONS.UPDATE || action.type === ACTIONS.RESET_TIMER) {
+      const note = state.notes.find((note) => note.id === action.payload.id);
+      if (note) {
+        await storage.setItem(note.id, note);
+      }
+    }
+    // Add new note that should be at the beginning
+    if (action.type === ACTIONS.ADD) {
+      const note = state.notes[0];
+      if (note) {
+        await storage.setItem(note.id, note);
+      }
+    }
+
+    // Always set the expired notes for now since we don't have a way to see if a note was pushed to expired.
+    // todo: make more efficient.
+    state.expiredNotes.forEach(async (note) => {
+      await storage.setItem(note.id, note);
+    });
+  };
+
+  // Debounce the listener
+  const debouncedListneer = debounce(listener, 200);
+
+  // Listen for changes
+  store.listen(debouncedListneer);
 };
 
 /**
@@ -88,7 +104,6 @@ const expirationListener = () => {
 export const main = async () => {
   // Local Storage
   await localStorageDriver();
-  await expirationListener();
 
   // DOM
   document.body.appendChild(document.createElement(NotesContainer));

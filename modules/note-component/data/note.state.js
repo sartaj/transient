@@ -1,5 +1,8 @@
 import { createReducerStore } from "../../create-reducer-store/create-reducer-store.js";
-import { daysFromNowToTimestamp } from "./note.utils.js";
+import {
+  daysFromNowToTimestamp,
+  isPastCurrentTimestamp,
+} from "./note.utils.js";
 
 /**
  * @typedef {import('./note.state').State} State
@@ -15,42 +18,40 @@ export const DEFAULT_EXPIRATION = 3;
  * todo: make an array of items
  * @type {State}
  */
-const initial = { notes: [] };
+const initial = { notes: [], expiredNotes: [] };
 
 /**
  * @returns {Note}
  */
 const createExpiringNote = (value = "") => {
+  const expires = daysFromNowToTimestamp(DEFAULT_EXPIRATION);
   return {
     value,
+    // ID is the first expiry date. This wont change
+    id: expires,
     // Set in date format
-    expires: daysFromNowToTimestamp(DEFAULT_EXPIRATION),
+    expired: false,
+    // Expires can change.
+    expires,
   };
 };
 
 /**
  * @type {import('./note.state').NoteReducer}
  */
-export const reducer = (state, action) => {
+export const reducer = (s, action) => {
+  const state = parseState(s);
+
   switch (action.type) {
     case ACTIONS.HYDRATE:
-      // Sort ascending, because the renderer will prepend.
-      const sortedNotes = action.payload.notes.sort((a, b) =>
-        a.expires.localeCompare(b.expires)
-      );
-
-      return {
-        ...action.payload,
-        // Sort notes by expiration expires
-        notes: sortedNotes,
-      };
+      return parseState(action.payload);
     case ACTIONS.UPDATE:
       return {
         ...state,
         notes: state.notes.map((note) => {
-          if (note.expires === action.payload.key) {
+          if (note.expires === action.payload.id) {
             return {
-              expires: note.expires,
+              ...note,
               value: action.payload.value,
             };
           }
@@ -87,11 +88,45 @@ export const reducer = (state, action) => {
     case ACTIONS.ADD:
       return {
         ...state,
-        notes: [createExpiringNote(action.payload), ...state.notes],
+        notes: [createExpiringNote(action.payload?.value), ...state.notes],
       };
     default:
       return state;
   }
+};
+
+/**
+ * @type {State} state
+ * @returns {State}
+ */
+const parseState = (state) => {
+  // Clear expired notes
+  let expiredNotes = state.expiredNotes || [];
+  const activeNotes = state.notes.filter((note) => {
+    // If note is expired, clear it
+    if (isPastCurrentTimestamp(note.expires)) {
+      expiredNotes = [...expiredNotes, { ...note, expired: true }];
+      return false;
+    }
+    return true;
+  });
+
+  // Sort ascending, because the renderer will prepend.
+  const sortedNotes = activeNotes.sort((a, b) =>
+    a.expires.localeCompare(b.expires)
+  );
+
+  const sortedExpiredNotes = expiredNotes.sort((a, b) =>
+    a.expires.localeCompare(b.expires)
+  );
+
+  /** @type {State} */
+  const stateToUpdate = {
+    ...state,
+    notes: sortedNotes,
+    expiredNotes: sortedExpiredNotes,
+  };
+  return stateToUpdate;
 };
 
 export const ACTIONS = Object.freeze({
