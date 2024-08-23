@@ -1,7 +1,7 @@
 {
   "name": "Transient Note",
   "short_name": "Transient",
-  "description": "Temporary Notes Designed To Disappear",
+  "description": "The Disappearing Notes App For Transient Thoughts",
   "categories": ["productivity", "utilities"],
   "start_url": "./",
   "display": "standalone",
@@ -10,12 +10,12 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "./icons/android-chrome-192x192.png",
+      "src": "./icons/android/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icons/android-chrome-512x512.png",
+      "src": "./icons/android/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
