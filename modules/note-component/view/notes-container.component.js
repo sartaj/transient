@@ -119,11 +119,13 @@ export class NotesContainerElement extends HTMLElement {
           note.expires
         );
 
-        // Set expiration
-        noteComponent.setAttribute(
-          NoteItemAttributes.NoteDisabled,
-          note.disabled
-        );
+        // Set disabled
+        if(note.disabled) {
+          noteComponent.setAttribute(
+            NoteItemAttributes.NoteDisabled,
+            note.disabled
+          );
+        }
 
         // Set default value
         noteComponent.setAttribute(
