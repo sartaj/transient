@@ -1,6 +1,9 @@
-export const createReducerStore = ({ initial, reducer }) => {
+/**
+ * @type {import('./create-reducer-store').createReducerStore}
+ */
+export const createReducerStore = ({ initialState, reducer }) => {
   // Array to store the state over time for undo functionality.
-  const stateOverTime = [initial];
+  const stateOverTime = [initialState];
   const actionsOverTime = [];
 
   // Array of listeners to push updates to.

@@ -38,7 +38,7 @@ export class NotesContainerElement extends HTMLElement {
 
       $(this.shadowRoot, SHOW_EXPIRED_NOTES).addEventListener(
         "click",
-        this.showExpiredNotes.bind(this)
+        this.toggleExpiredNotes.bind(this)
       );
 
       // Render
@@ -57,7 +57,7 @@ export class NotesContainerElement extends HTMLElement {
 
     $(this.shadowRoot, SHOW_EXPIRED_NOTES).removeEventListener(
       "click",
-      this.showExpiredNotes.bind(this)
+      this.toggleExpiredNotes.bind(this)
     );
   }
 
@@ -67,87 +67,76 @@ export class NotesContainerElement extends HTMLElement {
     });
   }
 
-  async showExpiredNotes() {
-    const dom = this.shadowRoot;
-    this.renderList(EXPIRED_LIST, "expiredNotes", () => {
-      const expiredNotesEl = verifyButton($(dom, SHOW_EXPIRED_NOTES));
-      expiredNotesEl.innerHTML = "Expired Notes";
-      expiredNotesEl.style.background = "transparent";
-      expiredNotesEl.disabled = true;
-      expiredNotesEl.style.cursor = "default";
+  async toggleExpiredNotes() {
+    store.dispatch({
+      type: ACTIONS.TOGGLE_SHOW_EXPIRED,
     });
   }
 
   /**
-   *
+   * @param {import('../data/note.state').State} state
    * @param {string} notesListId
    * @param {"notes" | "expiredNotes"} notesKey
    * @param {Function} [afterRender]
    */
-  async renderList(notesListId, notesKey, afterRender) {
+  async renderList(state, notesListId, notesKey, afterRender) {
     const dom = this.shadowRoot;
 
     const keyAttr = NoteItemAttributes.NoteId;
 
-    // Listen for changes to the note state and render the child components
-    store.listen((state) => {
-      const notesContainer = $(dom, notesListId);
+    const notesContainer = $(dom, notesListId);
 
-      const noteItems = $all(notesContainer, NoteItem);
-      const noteKeys = Array.from(noteItems).map((item) =>
-        item.getAttribute(keyAttr)
+    const noteItems = $all(notesContainer, NoteItem);
+    const noteKeys = Array.from(noteItems).map((item) =>
+      item.getAttribute(keyAttr)
+    );
+
+    // Loop through the notes and render the note item components if they don't exist yet
+    state[notesKey].forEach((note) => {
+      const indexOfItem = noteKeys.indexOf(note.expires);
+      // Check if item already exists, if it does, ignore re-rendering
+      if (indexOfItem !== -1) {
+        noteKeys.splice(indexOfItem, 1); // Remove the key from the array
+        return;
+      }
+
+      // Add element to the container if it already doesn't exist
+      const noteComponent = document.createElement(NoteItem);
+
+      // Assuming the id is unique
+      noteComponent.setAttribute(NoteItemAttributes.NoteId, note.id);
+
+      // Set expiration
+      noteComponent.setAttribute(NoteItemAttributes.NoteExpires, note.expires);
+
+      // Set disabled
+      if (note.expired) {
+        noteComponent.setAttribute(
+          NoteItemAttributes.NoteDisabled,
+          note.expired.toString()
+        );
+      }
+
+      // Set default value
+      noteComponent.setAttribute(
+        NoteItemAttributes.NoteDefaultValue,
+        note.value
       );
 
-      // Loop through the notes and render the note item components if they don't exist yet
-      state[notesKey].forEach((note) => {
-        const indexOfItem = noteKeys.indexOf(note.expires);
-        // Check if item already exists, if it does, ignore re-rendering
-        if (indexOfItem !== -1) {
-          noteKeys.splice(indexOfItem, 1); // Remove the key from the array
-          return;
-        }
-
-        // Add element to the container if it already doesn't exist
-        const noteComponent = document.createElement(NoteItem);
-
-        // Assuming the id is unique
-        noteComponent.setAttribute(NoteItemAttributes.NoteId, note.id);
-
-        // Set expiration
-        noteComponent.setAttribute(
-          NoteItemAttributes.NoteExpires,
-          note.expires
-        );
-
-        // Set disabled
-        if(note.disabled) {
-          noteComponent.setAttribute(
-            NoteItemAttributes.NoteDisabled,
-            note.disabled
-          );
-        }
-
-        // Set default value
-        noteComponent.setAttribute(
-          NoteItemAttributes.NoteDefaultValue,
-          note.value
-        );
-
-        // Prepend because we are going backwards
-        notesContainer.prepend(noteComponent);
-      });
-
-      // Any items left in the array are expired and should be removed
-      noteKeys.forEach((key) => {
-        const item = $(dom, `[${keyAttr}="${key}"]`);
-        item.remove();
-      });
-
-      // Run the after render hook
-      if (afterRender) {
-        afterRender();
-      }
+      // Prepend because we are going backwards
+      notesContainer.prepend(noteComponent);
     });
+
+    // Any items left in the array are expired and should be removed
+    noteKeys.forEach((key) => {
+      const item = $(dom, `[${keyAttr}="${key}"]`);
+      item.remove();
+    });
+
+    // Run the after render hook
+    if (afterRender) {
+      afterRender();
+    }
   }
 
   async render() {
@@ -158,16 +147,45 @@ export class NotesContainerElement extends HTMLElement {
     });
 
     let componentJustMounted = true;
-    await this.renderList(ACTIVE_NOTES_LIST, "notes", () => {
-      // Focus on the first note when the component just mounted
-      if (componentJustMounted) {
-        componentJustMounted = false;
-        // Focus on the first note. Hack the next frame by setting a timeout
-        setTimeout(() => {
-          const firstNote = $(dom, NoteItem);
-          const firstTextArea = $(firstNote.shadowRoot, "textarea");
-          firstTextArea.focus();
-        }, 300);
+
+    const expiredNotesButtonEl = verifyButton($(dom, SHOW_EXPIRED_NOTES));
+
+    store.listen(async (state) => {
+      await this.renderList(state, ACTIVE_NOTES_LIST, "notes", () => {
+        // Focus on the first note when the component just mounted
+        if (componentJustMounted) {
+          componentJustMounted = false;
+          // Focus on the first note. Hack the next frame by setting a timeout
+          setTimeout(() => {
+            const firstNote = $(dom, NoteItem);
+            const firstTextArea = $(firstNote.shadowRoot, "textarea");
+            firstTextArea.focus();
+          }, 300);
+        }
+      });
+
+      // Render the expired notes button
+      if (
+        state.expiredNotes.length === 0 &&
+        expiredNotesButtonEl.style.display !== "none"
+      ) {
+        expiredNotesButtonEl.style.display = "none";
+      } else if (expiredNotesButtonEl.style.display === "none") {
+        expiredNotesButtonEl.style.display = "block";
+      }
+
+      // Render expired notes
+      if (state.showExpired) {
+        await this.renderList(state, EXPIRED_LIST, "expiredNotes");
+        if (expiredNotesButtonEl.innerHTML !== "Hide Expired Notes") {
+          expiredNotesButtonEl.innerHTML = "Hide Expired Notes";
+        }
+      } else {
+        if (expiredNotesButtonEl.innerHTML !== "Show Expired Notes") {
+          const expiredNotesList = $(dom, EXPIRED_LIST);
+          expiredNotesList.innerHTML = "";
+          expiredNotesButtonEl.innerHTML = "Show Expired Notes";
+        }
       }
     });
   }

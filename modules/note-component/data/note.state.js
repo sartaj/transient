@@ -18,7 +18,7 @@ export const DEFAULT_EXPIRATION = 3;
  * todo: make an array of items
  * @type {State}
  */
-const initial = { notes: [], expiredNotes: [] };
+export const initialState = { notes: [], expiredNotes: [], showExpired: false };
 
 /**
  * @returns {Note}
@@ -69,9 +69,32 @@ export const reducer = (s, action) => {
         // Otherwise, remove the note that has the expiration as a key.
         return {
           ...state,
-          notes: state.notes.filter((note) => note.expires !== action.payload),
+          notes: state.notes.filter((note) => note.id !== action.payload.id),
         };
       }
+    case ACTIONS.EXPIRE:
+      // Expire the note
+      const noteToExpire = state.notes.find(
+        (note) => note.id === action.payload.id
+      );
+      noteToExpire.expired = true;
+      noteToExpire.expires = daysFromNowToTimestamp(-0.1);
+
+      const nextExpired = [noteToExpire, ...state.expiredNotes];
+
+      let nextNotes = state.notes.filter(
+        (note) => note.id !== action.payload.id
+      );
+      if (nextNotes.length === 0) {
+        nextNotes = [createExpiringNote()];
+      }
+
+      // Otherwise, remove the note that has the expiration as a key.
+      return {
+        ...state,
+        notes: nextNotes,
+        expiredNotes: nextExpired,
+      };
     case ACTIONS.RESET_TIMER:
       return {
         ...state,
@@ -90,14 +113,19 @@ export const reducer = (s, action) => {
         ...state,
         notes: [createExpiringNote(action.payload?.value), ...state.notes],
       };
+    case ACTIONS.TOGGLE_SHOW_EXPIRED:
+      return {
+        ...state,
+        showExpired: !state.showExpired,
+      };
     default:
       return state;
   }
 };
 
 /**
- * @type {State} state
- * @returns {State}
+ * @param {State} state
+ * @return {State}
  */
 const parseState = (state) => {
   // Clear expired notes
@@ -134,6 +162,9 @@ export const ACTIONS = Object.freeze({
   CLEAR: "CLEAR",
   ADD: "ADD",
   HYDRATE: "HYDRATE",
+  EXPIRE: "EXPIRE",
+  TOGGLE_EXPIRED: "TOGGLE_EXPIRED",
+  RESET_TIMER: "RESET_TIMER",
 });
 
 /**
@@ -152,6 +183,6 @@ export const isNoteState = (obj) =>
  * @type {import('./note.state').NoteStore}
  */
 export const store = createReducerStore({
-  initial,
+  initialState,
   reducer,
 });

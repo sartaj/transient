@@ -29,7 +29,7 @@ export const verifyInput = (element) => {
 
 /**
  * Ultra strict type guard check to verify query elements are input elements.
- * @param {HTMLButtonElement | null} element
+ * @param {HTMLElement | null} element
  * @returns {HTMLButtonElement}
  */
 export const verifyButton = (element) => {

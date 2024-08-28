@@ -17,14 +17,17 @@ export type Note = {
 type State = {
   notes: Note[];
   expiredNotes: Note[];
+  showExpired: boolean;
 };
 
 export declare enum ACTIONS {
   "UPDATE" = "UPDATE",
   "CLEAR" = "CLEAR",
+  "EXPIRE" = "EXPIRE",
   "ADD" = "ADD",
   "RESET_TIMER" = "RESET_TIMER",
   "HYDRATE" = "HYDRATE",
+  "TOGGLE_SHOW_EXPIRED" = "TOGGLE_SHOW_EXPIRED",
 }
 
 export type Actions =
@@ -56,7 +59,18 @@ export type Actions =
       payload: {
         id: ID;
       };
+    }
+  | {
+      type: ACTIONS.EXPIRE;
+      payload: {
+        id: ID;
+      };
+    }
+  | {
+      type: ACTIONS.TOGGLE_SHOW_EXPIRED;
     };
+
+export declare const initialState: State;
 
 export type NoteReducer = Reducer<State, Actions>;
 

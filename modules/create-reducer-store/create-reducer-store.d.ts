@@ -21,11 +21,11 @@ export type CreateReducerStore<
   State extends object,
   Action extends object
 > = (p: {
-  initial: State;
+  initialState: State;
   reducer: Reducer<State, Action>;
 }) => Store<State, Action>;
 
 /**
- * Creates a reducer store with the specified initial state and reducer function.
+ * Creates a reducer store with the specified initialState state and reducer function.
  */
 export declare const createReducerStore: CreateReducerStore<object, object>;

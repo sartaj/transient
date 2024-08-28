@@ -5,13 +5,10 @@
  * Calling the web storage and UI listeners "drivers" here as inspired by https://cycle.js.org/
  */
 import { createIndexedDBStorage } from "../web-storage/web-storage.js";
-import { ACTIONS, store } from "./data/note.state.js";
-import { isPastCurrentTimestamp } from "./data/note.utils.js";
+import { ACTIONS, store, initialState } from "./data/note.state.js";
 import { debounce } from "../data-utils/data.utils.js";
 // Importing the component defines the Web Component (see import)
 import { NotesContainer } from "./view/notes-container.component.js";
-
-const LOCALSTORAGE_KEY = "note-state";
 
 const INTRO_MESSAGE = `Welcome To Transient!
 The Disappearing Notes App For Transient Thoughts
@@ -37,9 +34,10 @@ const localStorageDriver = async () => {
   //   Init state with localstorage
   const activeNotes = (await storage.list("expired", false)) || [];
   const expiredNotes = (await storage.list("expired", true)) || [];
-  console.log("AAA", activeNotes);
 
   const showIntro = activeNotes.length === 0 && expiredNotes.length === 0;
+  const noActiveNotes = activeNotes.length === 0;
+
   if (showIntro) {
     // Add a note if none exist
     store.dispatch({
@@ -48,11 +46,20 @@ const localStorageDriver = async () => {
         value: INTRO_MESSAGE,
       },
     });
+  } else if (noActiveNotes) {
+    // Add an empty note if no active notes exist
+    store.dispatch({
+      type: ACTIONS.ADD,
+      payload: {
+        value: "",
+      },
+    });
   } else {
     // Hydrate the store from storage
     store.dispatch({
       type: ACTIONS.HYDRATE,
       payload: {
+        showExpired: false,
         notes: activeNotes,
         expiredNotes,
       },
@@ -64,7 +71,6 @@ const localStorageDriver = async () => {
    * @param {import('./data/note.state.js').Actions} action
    */
   const listener = async (state, action) => {
-    console.log(state, action);
     // Delete if note was cleared
     if (action.type === ACTIONS.CLEAR) {
       await storage.removeItem(action.payload.id);

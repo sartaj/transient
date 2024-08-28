@@ -12,6 +12,7 @@ import {
 
 // Inputs
 const CLEAR_BUTTON = "#clearButton";
+const EXPIRE_BUTTON = "#expireButton";
 const RESET_TIMER = "#resetTimerButton";
 const NOTE_INPUT = "#noteInput";
 const PERCENT_COUNTOWN = "#percentCountdown";
@@ -65,6 +66,11 @@ export class NoteItemElement extends HTMLElement {
         this.clearNote.bind(this)
       );
 
+      $(this.shadowRoot, EXPIRE_BUTTON).addEventListener(
+        "click",
+        this.expireNote.bind(this)
+      );
+
       $(this.shadowRoot, RESET_TIMER).addEventListener(
         "click",
         this.resetTimer.bind(this)
@@ -93,6 +99,11 @@ export class NoteItemElement extends HTMLElement {
     $(this.shadowRoot, CLEAR_BUTTON).removeEventListener(
       "click",
       this.clearNote.bind(this)
+    );
+
+    $(this.shadowRoot, EXPIRE_BUTTON).removeEventListener(
+      "click",
+      this.expireNote.bind(this)
     );
 
     $(this.shadowRoot, RESET_TIMER).removeEventListener(
@@ -185,6 +196,18 @@ export class NoteItemElement extends HTMLElement {
     }
   }
 
+  async expireNote() {
+    try {
+      store.dispatch({ type: ACTIONS.EXPIRE, payload: { id: this.noteId } });
+      // todo: should remove from the parent
+      if (this.shadowRoot) {
+        this.shadowRoot.innerHTML = "";
+      }
+    } catch (e) {
+      handleError(e);
+    }
+  }
+
   async resetTimer() {
     try {
       if (window.confirm("Reset Timer?")) {
@@ -237,7 +260,8 @@ export class NoteItemElement extends HTMLElement {
     $(dom, DAYS_LEFT).innerHTML = String(daysFromNow);
 
     if (this.noteDisabled) {
-      $(dom, NOTE_INPUT).setAttribute("disabled", true);
+      $(dom, NOTE_INPUT).setAttribute("disabled", "true");
+      $(dom, EXPIRE_BUTTON).style.display = "none";
     }
   }
 }
